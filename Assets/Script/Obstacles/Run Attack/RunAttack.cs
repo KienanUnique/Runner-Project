@@ -8,72 +8,70 @@ public class RunAttack : MonoBehaviour
     
     public float nextWaypointDistance = 1f;
 
-    private Path path;
-    private int currentWaypoint = 0;
-    private bool reachedEndOfPath = false;
+    private Path _path;
+    private int _currentWaypoint;
+    private bool _reachedEndOfPath;
 
-    private Seeker seeker;
-    //private Rigidbody2D rb;
-    private GameObject enemyGFX;
+    private Seeker _seeker;
+    private GameObject _enemyGfx;
 
     private Animator _animator;
     void Start()
     {
-        seeker = GetComponent<Seeker>();
-        //rb = GetComponent<Rigidbody2D>();
-        enemyGFX = transform.GetChild(0).gameObject;
-        _animator = enemyGFX.GetComponent<Animator>();
-        InvokeRepeating("UpdatePath", 0f, .5f);
+        _seeker = GetComponent<Seeker>();
+        _enemyGfx = transform.GetChild(0).gameObject;
+        _animator = _enemyGfx.GetComponent<Animator>();
+        InvokeRepeating(nameof(UpdatePath), 0f, .5f);
         _animator.Play("Run");
     }
 
     void UpdatePath()
     {
-        if(seeker.IsDone())
-            seeker.StartPath(transform.position, target.position, OnPathComplete);
+        if(_seeker.IsDone())
+            _seeker.StartPath(transform.position, target.position, OnPathComplete);
     }
 
     void OnPathComplete(Path p)
     {
         if (!p.error)
         {
-            path = p;
-            currentWaypoint = 0;
+            _path = p;
+            _currentWaypoint = 0;
         }
     }
     void FixedUpdate()
     {
-        if (path == null)
+        if (_path == null)
             return;
 
-        if (currentWaypoint >= path.vectorPath.Count)
+        if (_currentWaypoint >= _path.vectorPath.Count)
         {
-            reachedEndOfPath = true;
+            _reachedEndOfPath = true;
             return;
         }
         else
         {
-            reachedEndOfPath = false;
+            _reachedEndOfPath = false;
         }
         
-        Vector2 directon = ((Vector2)path.vectorPath[currentWaypoint] - (Vector2)transform.position).normalized;
+        Vector2 directon = ((Vector2)_path.vectorPath[_currentWaypoint] - (Vector2)transform.position).normalized;
         
         transform.position += (Vector3)directon * GameConst.s_Speed * Time.deltaTime; 
         
-        float distance = Vector2.Distance(transform.position, path.vectorPath[currentWaypoint]);
+        float distance = Vector2.Distance(transform.position, _path.vectorPath[_currentWaypoint]);
         
         if (distance < nextWaypointDistance)
         {
-            currentWaypoint++;
+            _currentWaypoint++;
         }
         
         if (directon.x >= 0)
         {
-            enemyGFX.transform.localScale = new Vector3(2.5f, 2.5f, 2.5f);
+            _enemyGfx.transform.localScale = new Vector3(2.5f, 2.5f, 2.5f);
         }
         else
         {
-            enemyGFX.transform.localScale = new Vector3(-2.5f, 2.5f, 2.5f);
+            _enemyGfx.transform.localScale = new Vector3(-2.5f, 2.5f, 2.5f);
         }
     }
 }
