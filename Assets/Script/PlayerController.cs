@@ -13,6 +13,7 @@ namespace Script
             Application.targetFrameRate = 60;
             _playerClass = GetComponent<PlayerUtilities>();
             _levelUtilities = GetComponent<LevelUtilities>();
+            _levelUtilities.StartLevel();
         }
         
         private void Update()
