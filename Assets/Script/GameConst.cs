@@ -4,13 +4,13 @@ namespace Script
 {
     public static class GameConst
     {
-        public const int s_Speed = 4;
+        public const int PlayerSpeed = 4;
 
-        public const int s_LeftDir = 0;
-        public const int s_RightDir = 1;
+        public const int LeftDirNum = 0;
+        public const int RightDirNum = 1;
 
-        public const int s_LeftBorder = -2;
-        public const int s_RightBorder = 1;
+        public const int LeftBorderTile = -2;
+        public const int RightBorderTile = 2;
 
         public const string PlayerGameObjName = "Player";
 

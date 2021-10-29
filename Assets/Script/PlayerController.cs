@@ -22,7 +22,7 @@ namespace Script
             {
                 if (_playerClass.isAlive)
                 {
-                    _playerClass.Move(SwipeInput.swipedLeft ? GameConst.s_LeftDir : GameConst.s_RightDir);
+                    _playerClass.Move(SwipeInput.swipedLeft ? GameConst.LeftDirNum : GameConst.RightDirNum);
                 }
                 else _levelUtilities.StartLevel();
             }

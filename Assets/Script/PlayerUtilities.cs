@@ -25,18 +25,18 @@ namespace Script
             if (isAlive)
             {
                 transform.position = new Vector3(Mathf.Lerp(transform.position.x, _moveToX, Time.deltaTime * 8),
-                    transform.position.y + GameConst.s_Speed * Time.deltaTime, 0);
+                    transform.position.y + GameConst.PlayerSpeed * Time.deltaTime, 0);
             }
         }
 
         public void Move(int direction)
         {
             int moveToCellX = mainGrid.WorldToCell(transform.position).x;
-            if (direction == GameConst.s_LeftDir && moveToCellX - 1 >= GameConst.s_LeftBorder)
+            if (direction == GameConst.LeftDirNum && moveToCellX - 1 >= GameConst.LeftBorderTile)
             {
                 moveToCellX -= 1;
             }
-            else if (direction == GameConst.s_RightDir && moveToCellX + 1 <= GameConst.s_RightBorder)
+            else if (direction == GameConst.RightDirNum && moveToCellX + 1 <= GameConst.RightBorderTile)
             {
                 moveToCellX += 1;
             }
