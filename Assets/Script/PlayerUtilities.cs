@@ -1,10 +1,14 @@
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace Script
 {
     public class PlayerUtilities : MonoBehaviour
     {
         public bool isAlive = true;
+
+        [SerializeField] private Tilemap borderTilemap;
+        
         public Grid mainGrid;
 
         private float _moveToX;
@@ -31,17 +35,20 @@ namespace Script
 
         public void Move(int direction)
         {
-            int moveToCellX = mainGrid.WorldToCell(transform.position).x;
-            if (direction == GameConst.LeftDirNum && moveToCellX - 1 >= GameConst.LeftBorderTile)
+            var moveToCell = mainGrid.WorldToCell(transform.position);
+            if (direction == GameConst.LeftDirNum)
             {
-                moveToCellX -= 1;
+                moveToCell.x -= 1;
             }
-            else if (direction == GameConst.RightDirNum && moveToCellX + 1 <= GameConst.RightBorderTile)
+            else if (direction == GameConst.RightDirNum)
             {
-                moveToCellX += 1;
+                moveToCell.x += 1;
             }
 
-            _moveToX = mainGrid.GetCellCenterWorld(new Vector3Int(moveToCellX, 0, 0)).x;
+            if (!borderTilemap.HasTile(moveToCell))
+            {
+                _moveToX = mainGrid.GetCellCenterWorld(new Vector3Int(moveToCell.x, 0, 0)).x;
+            }
         }
 
         public void Respawn()

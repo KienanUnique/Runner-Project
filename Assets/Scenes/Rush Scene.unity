@@ -24048,6 +24048,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isAlive: 1
+  borderTilemap: {fileID: 192224328}
   mainGrid: {fileID: 1398489260}
 --- !u!1 &1964606283
 GameObject:
