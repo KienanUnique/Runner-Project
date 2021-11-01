@@ -8,7 +8,6 @@ namespace Script
 
         private void Start()
         {
-            //_player = GameObject.Find("Player").GetComponent<PlayerUtilities>();
             _player = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<PlayerUtilities>();
         }
     

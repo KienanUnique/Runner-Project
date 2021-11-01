@@ -5,11 +5,10 @@ namespace Script
 {
     public class PlayerUtilities : MonoBehaviour
     {
-        public bool isAlive = true;
+        [HideInInspector] public bool isAlive = true;
 
         [SerializeField] private Tilemap borderTilemap;
-        
-        public Grid mainGrid;
+        [SerializeField] private Grid mainGrid;
 
         private float _moveToX;
         private Animator _animator;
@@ -55,7 +54,7 @@ namespace Script
         {
             _animator.SetInteger(_hashDir, 1);
             _animator.SetBool(_hashIsMoving, true);
-            transform.position = mainGrid.GetCellCenterWorld((Vector3Int) GameConst.PlayerStartPos);
+            transform.position = mainGrid.GetCellCenterWorld((Vector3Int)GameConst.PlayerStartPos);
             _moveToX = transform.position.x;
             isAlive = true;
         }

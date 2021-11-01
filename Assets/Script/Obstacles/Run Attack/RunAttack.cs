@@ -4,9 +4,9 @@ using Script;
 
 public class RunAttack : MonoBehaviour
 {
-    public Transform target;
+    [SerializeField] private Transform target;
     
-    public float nextWaypointDistance = 1f;
+    [HideInInspector]public float nextWaypointDistance = 1f;
 
     private Path _path;
     private int _currentWaypoint;
