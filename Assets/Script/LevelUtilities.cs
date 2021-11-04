@@ -13,6 +13,7 @@ namespace Script
         public void StartLevel()
         {
             _player.Respawn();
+            Camera.main.gameObject.GetComponent<CameraFollow>().ReturnCenter();
         }
     }
 }

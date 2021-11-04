@@ -8,7 +8,7 @@ namespace Script
         [HideInInspector] public bool isAlive = true;
 
         [SerializeField] private Tilemap borderTilemap;
-        [SerializeField] private Grid mainGrid;
+        public Grid mainGrid;
 
         private float _moveToX;
         private Animator _animator;

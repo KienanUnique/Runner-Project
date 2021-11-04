@@ -5,18 +5,19 @@ namespace Script
 {
     public class CameraFollow : MonoBehaviour
     {
-        public Transform target;
-        public float lerpSpeed = 1.0f;
-        public Boolean isCentered = true;
-        public float cameraMiddleX = 0.48f;
-
+        [SerializeField] private Transform target;
+        [SerializeField] private float lerpSpeed = 1.0f;
+        [SerializeField] private Boolean isCentered = true;
+        [SerializeField] private float cameraMiddleX = 0.5f;
+        
+        private float _currentCameraMiddleX;
         private Vector3 _offset;
         private Vector3 _targetPos;
 
         private void Start()
         {
             if (target == null) return;
-
+            _currentCameraMiddleX = cameraMiddleX;
             _offset = transform.position - target.position;
         }
 
@@ -26,11 +27,7 @@ namespace Script
 
             if (isCentered)
             {
-                //targetPos = target.position + offset;
-                //_targetPos.y = target.position.y + _offset.y;
-                //_targetPos.z = target.position.z + _offset.z;
-                _targetPos.x = cameraMiddleX;
-                _targetPos = new Vector3(cameraMiddleX, target.position.y + _offset.y, _offset.z);
+                _targetPos = new Vector3(_currentCameraMiddleX, target.position.y + _offset.y, _offset.z);
             }
 
             else
@@ -41,5 +38,14 @@ namespace Script
             transform.position = Vector3.Lerp(transform.position, _targetPos, lerpSpeed * Time.deltaTime);
         }
 
+        public void SetCenter(float centerX)
+        {
+            _currentCameraMiddleX = centerX;
+        }
+
+        public void ReturnCenter()
+        {
+            _currentCameraMiddleX = cameraMiddleX;
+        }
     }
 }
