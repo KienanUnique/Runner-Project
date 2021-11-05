@@ -24177,6 +24177,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1119569248}
     m_Modifications:
+    - target: {fileID: 7998391736670735352, guid: d441e2cd7f8b591bdbe7c2f0e98212cb, type: 3}
+      propertyPath: centerCellX
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7998391736670735353, guid: d441e2cd7f8b591bdbe7c2f0e98212cb, type: 3}
+      propertyPath: m_Size.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7998391736670735353, guid: d441e2cd7f8b591bdbe7c2f0e98212cb, type: 3}
+      propertyPath: m_Size.y
+      value: 5.3
+      objectReference: {fileID: 0}
     - target: {fileID: 7998391736670735358, guid: d441e2cd7f8b591bdbe7c2f0e98212cb, type: 3}
       propertyPath: m_Name
       value: Camera Trigger 1
