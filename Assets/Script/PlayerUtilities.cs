@@ -16,6 +16,8 @@ namespace Script
         private readonly int _hashIsMoving = Animator.StringToHash("IsMoving");
         private readonly int _hashDir = Animator.StringToHash("Direction");
 
+        //private Vector3Int _playerGridPos;
+
         private void Start()
         {
             _animator = GetComponent<Animator>();
