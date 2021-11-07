@@ -10,13 +10,8 @@ using UnityEngine;
  */
 
 public class SwipeInput : MonoBehaviour {
-
-	// If the touch is longer than MAX_SWIPE_TIME, we dont consider it a swipe
-	public const float MAX_SWIPE_TIME = 0.5f; 
 	
-	// Factor of the screen width that we consider a swipe
-	// 0.17 works well for portrait mode 16:9 phone
-	public const float MIN_SWIPE_DISTANCE = 0.06f;
+	public const float DETECT_SWIPE_DISTANCE = 0.05f;
 
 	public static bool swipedRight = false;
 	public static bool swipedLeft = false;
@@ -25,9 +20,12 @@ public class SwipeInput : MonoBehaviour {
 	
 	
 	public bool debugWithArrowKeys = true;
+	private Vector2 _swipe;
 
 	Vector2 startPos;
-	float startTime;
+
+	private bool _isDetecting = false;
+	//float startTime;
 
 	public void Update()
 	{
@@ -39,25 +37,16 @@ public class SwipeInput : MonoBehaviour {
 		if(Input.touches.Length > 0)
 		{
 			Touch t = Input.GetTouch(0);
-			if(t.phase == TouchPhase.Began)
+			if(t.phase == TouchPhase.Began && !_isDetecting)
 			{
 				startPos = new Vector2(t.position.x/(float)Screen.width, t.position.y/(float)Screen.width);
-				startTime = Time.time;
+				_isDetecting = true;
+				_swipe = new Vector2(0, 0);
 			}
-			if(t.phase == TouchPhase.Ended)
+			else if(_isDetecting && _swipe.magnitude >= DETECT_SWIPE_DISTANCE)
 			{
-				if (Time.time - startTime > MAX_SWIPE_TIME) // press too long
-					return;
-
-				Vector2 endPos = new Vector2(t.position.x/(float)Screen.width, t.position.y/(float)Screen.width);
-
-				Vector2 swipe = new Vector2(endPos.x - startPos.x, endPos.y - startPos.y);
-
-				if (swipe.magnitude < MIN_SWIPE_DISTANCE) // Too short swipe
-					return;
-
-				if (Mathf.Abs (swipe.x) > Mathf.Abs (swipe.y)) { // Horizontal swipe
-					if (swipe.x > 0) {
+				if (Mathf.Abs (_swipe.x) > Mathf.Abs (_swipe.y)) { // Horizontal swipe
+					if (_swipe.x > 0) {
 						swipedRight = true;
 					}
 					else {
@@ -65,13 +54,20 @@ public class SwipeInput : MonoBehaviour {
 					}
 				}
 				else { // Vertical swipe
-					if (swipe.y > 0) {
+					if (_swipe.y > 0) {
 						swipedUp = true;
 					}
 					else {
 						swipedDown = true;
 					}
 				}
+
+				_isDetecting = false;
+			}
+			else if (_isDetecting)
+			{
+				Vector2 endPos = new Vector2(t.position.x/(float)Screen.width, t.position.y/(float)Screen.width);
+				_swipe = new Vector2(endPos.x - startPos.x, endPos.y - startPos.y);
 			}
 		}
 
