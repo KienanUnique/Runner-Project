@@ -1,10 +1,9 @@
-using Script.Triggers;
 using UnityEditor;
 
 namespace Script.Editor
 {
-    [CustomEditor(typeof(CameraTrigger))]
-    public class CameraTriggerEditor : UnityEditor.Editor
+    [CustomEditor(typeof(CameraFollow))]
+    public class CameraFollowEditor : UnityEditor.Editor
     {
         public enum DisplayCategory
         {
@@ -14,6 +13,7 @@ namespace Script.Editor
         public DisplayCategory centerType;
         public override void OnInspectorGUI()
         {
+            EditorGUILayout.LabelField("Default center", EditorStyles.boldLabel);
             centerType = (DisplayCategory) EditorGUILayout.EnumPopup("Type of centering", centerType);
 
             switch (centerType)
@@ -27,6 +27,10 @@ namespace Script.Editor
                     break;
 
             }
+            
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Movement Settings", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("lerpSpeed"));
             
             serializedObject.ApplyModifiedProperties();
         }

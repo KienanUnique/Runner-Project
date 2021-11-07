@@ -5,35 +5,43 @@ namespace Script
 {
     public class CameraFollow : MonoBehaviour
     {
-        [SerializeField] private Transform target;
-        [SerializeField] private float lerpSpeed = 1.0f;
-        [SerializeField] private Boolean isCentered = true;
-        [SerializeField] private float cameraMiddleX = 0.5f;
+        [SerializeField] private bool centerBetween;
+        [SerializeField] private int leftCellX;
+        [SerializeField] private int rightCellX;
+        [SerializeField] private int centerCellX;
         
+        [SerializeField] private float lerpSpeed = 4f;
+     
+        private Transform _target;
+        private float _defaultCameraMiddleX = 0.5f;
         private float _currentCameraMiddleX;
         private Vector3 _offset;
         private Vector3 _targetPos;
 
         private void Start()
         {
-            if (target == null) return;
-            _currentCameraMiddleX = cameraMiddleX;
-            _offset = transform.position - target.position;
+            //if (target == null) return;
+            _target = GameObject.Find(GameConst.PlayerGameObjName).transform;
+            Grid mainGrid = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<PlayerUtilities>().mainGrid;
+            
+            if (centerBetween)
+            {
+                _defaultCameraMiddleX = (mainGrid.GetCellCenterWorld(new Vector3Int(leftCellX, 0, 0)).x +
+                                 mainGrid.GetCellCenterWorld(new Vector3Int(rightCellX, 0, 0)).x) / 2;
+            }
+            else
+            {
+                _defaultCameraMiddleX = mainGrid.GetCellCenterWorld(new Vector3Int(centerCellX, 0, 0)).x;
+            }
+            _currentCameraMiddleX = _defaultCameraMiddleX;
+            _offset = transform.position - _target.position;
         }
 
         private void Update()
         {
-            if (target == null) return;
+            if (_target == null) return;
 
-            if (isCentered)
-            {
-                _targetPos = new Vector3(_currentCameraMiddleX, target.position.y + _offset.y, _offset.z);
-            }
-
-            else
-            {
-                _targetPos = target.position + _offset;
-            }
+            _targetPos = new Vector3(_currentCameraMiddleX, _target.position.y + _offset.y, _offset.z);
 
             transform.position = Vector3.Lerp(transform.position, _targetPos, lerpSpeed * Time.deltaTime);
         }
@@ -45,7 +53,7 @@ namespace Script
 
         public void ReturnCenter()
         {
-            _currentCameraMiddleX = cameraMiddleX;
+            _currentCameraMiddleX = _defaultCameraMiddleX;
         }
     }
 }
