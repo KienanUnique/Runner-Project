@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Script
 {
@@ -18,11 +17,13 @@ namespace Script
         private Vector3 _offset;
         private Vector3 _targetPos;
 
+        private LevelUtilities _levelUtilities;
+
         private void Start()
         {
-            //if (target == null) return;
             _target = GameObject.Find(GameConst.PlayerGameObjName).transform;
-            Grid mainGrid = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<PlayerUtilities>().mainGrid;
+            _levelUtilities = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<LevelUtilities>(); 
+            Grid mainGrid = _levelUtilities.GetLevelGrid();
             
             if (centerBetween)
             {

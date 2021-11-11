@@ -7,8 +7,9 @@ namespace Script
     {
         [HideInInspector] public bool isAlive = true;
 
-        [SerializeField] private Tilemap borderTilemap;
-        public Grid mainGrid;
+        private Tilemap _borderTilemap;
+        private LevelUtilities _levelUtilities;
+        private Grid _mainGrid;
 
         private float _moveToX;
         private Animator _animator;
@@ -16,10 +17,11 @@ namespace Script
         private readonly int _hashIsMoving = Animator.StringToHash("IsMoving");
         private readonly int _hashDir = Animator.StringToHash("Direction");
 
-        //private Vector3Int _playerGridPos;
-
         private void Start()
         {
+            _levelUtilities = GetComponent<LevelUtilities>();
+            _borderTilemap = _levelUtilities.GetLevelBorders();
+            _mainGrid = _levelUtilities.GetLevelGrid();
             _animator = GetComponent<Animator>();
             _animator.SetInteger(_hashDir, 1);
             _animator.SetBool(_hashIsMoving, true);
@@ -36,7 +38,7 @@ namespace Script
 
         public void Move(int direction)
         {
-            var moveToCell = mainGrid.WorldToCell(transform.position);
+            var moveToCell = _mainGrid.WorldToCell(transform.position);
             if (direction == GameConst.LeftDirNum)
             {
                 moveToCell.x -= 1;
@@ -46,17 +48,22 @@ namespace Script
                 moveToCell.x += 1;
             }
 
-            if (!borderTilemap.HasTile(moveToCell))
+            if (!_borderTilemap.HasTile(moveToCell))
             {
-                _moveToX = mainGrid.GetCellCenterWorld(new Vector3Int(moveToCell.x, 0, 0)).x;
+                _moveToX = _mainGrid.GetCellCenterWorld(new Vector3Int(moveToCell.x, 0, 0)).x;
             }
+        }
+
+        public void MoveToX(float moveToX)
+        {
+            _moveToX = moveToX;
         }
 
         public void Respawn()
         {
             _animator.SetInteger(_hashDir, 1);
             _animator.SetBool(_hashIsMoving, true);
-            transform.position = mainGrid.GetCellCenterWorld((Vector3Int)GameConst.PlayerStartPos);
+            transform.position = _mainGrid.GetCellCenterWorld((Vector3Int)GameConst.PlayerStartPos);
             _moveToX = transform.position.x;
             isAlive = true;
         }

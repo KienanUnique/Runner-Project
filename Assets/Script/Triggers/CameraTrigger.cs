@@ -7,6 +7,7 @@ namespace Script.Triggers
         private CameraFollow _cameraCf;
         private Grid _mainGrid;
         private float _finalCenterX;
+        private LevelUtilities _levelUtilities;
         
         [SerializeField] private bool centerBetween;
         [SerializeField] private int leftCellX;
@@ -16,8 +17,9 @@ namespace Script.Triggers
 
         void Start()
         {
+            _levelUtilities = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<LevelUtilities>();
             if (Camera.main is { }) _cameraCf = Camera.main.gameObject.GetComponent<CameraFollow>();
-            _mainGrid = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<PlayerUtilities>().mainGrid;
+            _mainGrid = _levelUtilities.GetLevelGrid();
 
             if (centerBetween)
             {
