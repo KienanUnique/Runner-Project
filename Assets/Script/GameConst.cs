@@ -4,14 +4,16 @@ namespace Script
 {
     public static class GameConst
     {
-        public const int PlayerSpeed = 4;
+        public const int PlayerSpeedY = 4;
+        public const int PlayerSpeedX = 14;
 
         public const int LeftDirNum = 0;
         public const int RightDirNum = 1;
 
-        public const string PlayerGameObjName = "Player";
+        public const float SwitchLineCooldownSec = 1f;
 
-        public static readonly Vector2Int PlayerStartPos = new Vector2Int(-1, -5);
+        public const string PlayerGameObjName = "Player";
+        
     }
 }
 
