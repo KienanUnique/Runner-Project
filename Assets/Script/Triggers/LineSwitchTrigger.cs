@@ -1,7 +1,5 @@
-using System.Numerics;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using Vector2 = UnityEngine.Vector2;
 
 namespace Script.Triggers
 {
@@ -25,7 +23,7 @@ namespace Script.Triggers
             if (!other.gameObject.CompareTag("Player")) return;
             
             var positionToMove = _mainGrid.WorldToCell(other.gameObject.transform.position);
-            if (other.bounds.center.x > _playerUtilities.GetPreviousmMoveToX())
+            if (other.bounds.center.x > _playerUtilities.GetPreviousMoveToX())
             {
                 positionToMove.x++;
                 while (_transitionsTilemap.HasTile(positionToMove))

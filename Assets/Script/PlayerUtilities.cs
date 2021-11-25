@@ -1,8 +1,6 @@
 using System.Collections;
-using System.Numerics;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using Vector3 = UnityEngine.Vector3;
 
 namespace Script
 {
@@ -13,20 +11,19 @@ namespace Script
         private Tilemap _borderTilemap;
         private LevelUtilities _levelUtilities;
         private Grid _mainGrid;
-        
+
         private Tilemap _changeLineTilemap;
 
         private float _moveToX;
-        private float _previousmMoveToX;
+        private float _previousMoveToX;
         private bool _isSwitchLineCooldown;
-        
+
         private Animator _animator;
 
         private readonly int _hashIsMoving = Animator.StringToHash("IsMoving");
         private readonly int _hashDir = Animator.StringToHash("Direction");
-        
 
-
+        private Vector2 _velocity = Vector2.zero;
 
         private void Start()
         {
@@ -43,26 +40,27 @@ namespace Script
         {
             if (isAlive)
             {
-                transform.position = new Vector3(Mathf.Lerp(transform.position.x, _moveToX, Time.deltaTime * GameConst.PlayerSpeedX),
-                    transform.position.y + GameConst.PlayerSpeedY * Time.deltaTime, 0);
-
+                var curPosX = Vector2.SmoothDamp(transform.position, new Vector2(_moveToX, transform.position.y),
+                    ref _velocity, GameConst.PlayerSmoothTimeX).x;
+                var curPosY = transform.position.y + GameConst.PlayerSpeedY * Time.deltaTime;
+                transform.position = new Vector3(curPosX, curPosY, 0);
             }
         }
-        
+
         public IEnumerator SwitchLineWithCooldown(float newMoveX)
         {
             if (_isSwitchLineCooldown)
                 yield break;
 
             SetMoveToX(newMoveX);
-            
+
             _isSwitchLineCooldown = true;
-            
+
             yield return new WaitForSeconds(GameConst.SwitchLineCooldownSec);
 
             _isSwitchLineCooldown = false;
         }
-        
+
         public void MoveOnSwipe(int direction)
         {
             var moveToCell = _mainGrid.WorldToCell(transform.position);
@@ -75,24 +73,23 @@ namespace Script
                 moveToCell.x += 1;
             }
 
-            if (!_borderTilemap.HasTile(moveToCell) && !(_isSwitchLineCooldown && _changeLineTilemap.HasTile(moveToCell)))
-            //if (!_borderTilemap.HasTile(moveToCell) && !_isSwitchLineCooldown)
+            if (!_borderTilemap.HasTile(moveToCell) &&
+                !(_isSwitchLineCooldown && _changeLineTilemap.HasTile(moveToCell)))
             {
-                _previousmMoveToX = _moveToX; 
+                _previousMoveToX = _moveToX;
                 _moveToX = _mainGrid.GetCellCenterWorld(new Vector3Int(moveToCell.x, 0, 0)).x;
             }
         }
-        
-        
-        public void SetMoveToX(float moveToX)
+
+        private void SetMoveToX(float moveToX)
         {
-            _previousmMoveToX = _moveToX;
+            _previousMoveToX = _moveToX;
             _moveToX = moveToX;
         }
 
-        public float GetPreviousmMoveToX()
+        public float GetPreviousMoveToX()
         {
-            return _previousmMoveToX;
+            return _previousMoveToX;
         }
 
         public void Respawn()
@@ -101,7 +98,7 @@ namespace Script
             _animator.SetBool(_hashIsMoving, true);
             transform.position = _mainGrid.GetCellCenterWorld(_levelUtilities.GetPlayerGridStartPos());
             _moveToX = _mainGrid.GetCellCenterWorld(_levelUtilities.GetPlayerGridStartPos()).x;
-            _previousmMoveToX = _moveToX; 
+            _previousMoveToX = _moveToX;
             _isSwitchLineCooldown = false;
             isAlive = true;
         }

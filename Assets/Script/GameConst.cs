@@ -5,7 +5,7 @@ namespace Script
     public static class GameConst
     {
         public const int PlayerSpeedY = 4;
-        public const int PlayerSpeedX = 14;
+        public const float PlayerSmoothTimeX = 0.05f;
 
         public const int LeftDirNum = 0;
         public const int RightDirNum = 1;
