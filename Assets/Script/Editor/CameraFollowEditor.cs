@@ -30,22 +30,22 @@ namespace Script.Editor
             
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Movement Settings", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("lerpSpeed"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("lerpTime"));
             
             serializedObject.ApplyModifiedProperties();
         }
 
         void DisplayBetweenCellsCentering()
         {
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("leftCellX"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("rightCellX"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("defaultLeftCellX"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("defaultRightCellX"));
             serializedObject.FindProperty("centerBetween").boolValue = true;
         }
         
         void DisplaySingleCellCentering()
         {
             serializedObject.FindProperty("centerBetween").boolValue = false;
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("centerCellX"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("defaultCenterCellX"));
         }
     }
 }

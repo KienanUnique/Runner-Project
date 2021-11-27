@@ -20,21 +20,19 @@ namespace Script.Triggers
             _levelUtilities = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<LevelUtilities>();
             if (Camera.main is { }) _cameraCf = Camera.main.gameObject.GetComponent<CameraFollow>();
             _mainGrid = _levelUtilities.GetLevelGrid();
-
-            if (centerBetween)
-            {
-                _finalCenterX = (_mainGrid.GetCellCenterWorld(new Vector3Int(leftCellX, 0, 0)).x +
-                                 _mainGrid.GetCellCenterWorld(new Vector3Int(rightCellX, 0, 0)).x) / 2;
-            }
-            else
-            {
-                _finalCenterX = _mainGrid.GetCellCenterWorld(new Vector3Int(centerCellX, 0, 0)).x;
-            }
         }
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if(other.gameObject.CompareTag("Player"))
-                _cameraCf.SetCenter(_finalCenterX);
+            if (!other.gameObject.CompareTag("Player")) return;
+            
+            if (centerBetween)
+            {
+                _cameraCf.SetCameraXBetweenCellsCenters(leftCellX, rightCellX);
+            }
+            else
+            {
+                _cameraCf.SetCameraXOnCellCenter(centerCellX);
+            }
         }
     }
 }

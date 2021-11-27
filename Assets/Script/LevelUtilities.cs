@@ -10,7 +10,7 @@ namespace Script
         [SerializeField] private Grid mainGrid;
         [SerializeField] private Tilemap borderTilemap;
         [SerializeField] private Tilemap changeLineTilemap;
-        
+
 
         private PlayerUtilities _player;
 

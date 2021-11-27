@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace Script
 {
     public static class GameConst

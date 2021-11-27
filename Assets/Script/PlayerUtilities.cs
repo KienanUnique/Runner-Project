@@ -12,8 +12,6 @@ namespace Script
         private LevelUtilities _levelUtilities;
         private Grid _mainGrid;
 
-        private Tilemap _changeLineTilemap;
-
         private float _moveToX;
         private float _previousMoveToX;
         private bool _isSwitchLineCooldown;
@@ -29,7 +27,6 @@ namespace Script
         {
             _levelUtilities = GetComponent<LevelUtilities>();
             _borderTilemap = _levelUtilities.GetLevelBorders();
-            _changeLineTilemap = _levelUtilities.GetLevelLineSwitches();
             _mainGrid = _levelUtilities.GetLevelGrid();
             _animator = GetComponent<Animator>();
             _animator.SetInteger(_hashDir, 1);
@@ -47,20 +44,6 @@ namespace Script
             }
         }
 
-        public IEnumerator SwitchLineWithCooldown(float newMoveX)
-        {
-            if (_isSwitchLineCooldown)
-                yield break;
-
-            SetMoveToX(newMoveX);
-
-            _isSwitchLineCooldown = true;
-
-            yield return new WaitForSeconds(GameConst.SwitchLineCooldownSec);
-
-            _isSwitchLineCooldown = false;
-        }
-
         public void MoveOnSwipe(int direction)
         {
             var moveToCell = _mainGrid.WorldToCell(transform.position);
@@ -73,15 +56,14 @@ namespace Script
                 moveToCell.x += 1;
             }
 
-            if (!_borderTilemap.HasTile(moveToCell) &&
-                !(_isSwitchLineCooldown && _changeLineTilemap.HasTile(moveToCell)))
+            if (!_borderTilemap.HasTile(moveToCell))
             {
                 _previousMoveToX = _moveToX;
                 _moveToX = _mainGrid.GetCellCenterWorld(new Vector3Int(moveToCell.x, 0, 0)).x;
             }
         }
 
-        private void SetMoveToX(float moveToX)
+        public void SetMoveToX(float moveToX)
         {
             _previousMoveToX = _moveToX;
             _moveToX = moveToX;
