@@ -18,13 +18,20 @@ namespace Script
         
         private void Update()
         {
-            if (SwipeInput.swipedLeft || SwipeInput.swipedRight)
+            if (_playerClass.isAlive)
             {
-                if (_playerClass.isAlive)
+                if (SwipeInput.SwipedLeft || SwipeInput.SwipedRight)
                 {
-                    _playerClass.MoveOnSwipe(SwipeInput.swipedLeft ? GameConst.LeftDirNum : GameConst.RightDirNum);
+                    _playerClass.MoveOnSwipe(SwipeInput.SwipedLeft ? GameConst.LeftDirNum : GameConst.RightDirNum);
                 }
-                else _levelUtilities.StartLevel();
+                else if (SwipeInput.DoubleTap)
+                {
+                    Debug.Log("DoubleTap");
+                }
+            }
+            else if (!_playerClass.isAlive && SwipeInput.SwipedLeft || SwipeInput.SwipedRight)
+            {
+                _levelUtilities.StartLevel();
             }
         }
     }
