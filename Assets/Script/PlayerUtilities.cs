@@ -14,7 +14,6 @@ namespace Script
 
         private float _moveToX;
         private float _previousMoveToX;
-        private bool _isSwitchLineCooldown;
 
         private Animator _animator;
 
@@ -81,7 +80,6 @@ namespace Script
             transform.position = _mainGrid.GetCellCenterWorld(_levelUtilities.GetPlayerGridStartPos());
             _moveToX = _mainGrid.GetCellCenterWorld(_levelUtilities.GetPlayerGridStartPos()).x;
             _previousMoveToX = _moveToX;
-            _isSwitchLineCooldown = false;
             isAlive = true;
         }
 
