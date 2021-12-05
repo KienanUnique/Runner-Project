@@ -5,23 +5,21 @@ namespace Script
 {
 	public class SwipeInput : MonoBehaviour
 	{
-
-		[SerializeField] private const float DetectSwipeDistance = 0.05f;
-		[SerializeField] private const float NextTouchWaitSec = 0.8f;
+		[SerializeField] private float detectSwipeDistance = 0.05f;
+		[SerializeField] private float nextTouchWaitSec = 0.4f;
 		[SerializeField] private bool debugWithArrowKeys = true;
 
-		[HideInInspector] public static bool SwipedRight = false;
-		[HideInInspector] public static bool SwipedLeft = false;
-		[HideInInspector] public static bool SwipedUp = false;
-		[HideInInspector] public static bool SwipedDown = false;
-		[HideInInspector] public static bool DoubleTap = false;
+		public static bool SwipedRight;
+		public static bool SwipedLeft;
+		public static bool SwipedUp;
+		public static bool SwipedDown;
+		public static bool DoubleTap;
 
 		private Vector2 _swipe;
 		private Vector2 _startPos;
 
-		private bool _isSwipeDetecting = false;
-		//private int _touchesCount = 0;
-		private bool _wasFirstTap = false;
+		private bool _isSwipeDetecting;
+		private bool _wasAlreadyFirstTap;
 		private IEnumerator _nextTouchWaitCooldownCoroutine;
 
 		public void Update()
@@ -34,18 +32,17 @@ namespace Script
 
 			if (Input.touches.Length > 0)
 			{
-				Touch t = Input.GetTouch(0);
+				var t = Input.GetTouch(0);
 				if (t.phase == TouchPhase.Began && !_isSwipeDetecting)
 				{
-					_startPos = new Vector2(t.position.x / (float)Screen.width, t.position.y / (float)Screen.width);
+					_startPos = new Vector2(t.position.x / Screen.width, t.position.y / Screen.width);
 					_isSwipeDetecting = true;
 					_swipe = new Vector2(0, 0);
 				}
-				else if (_isSwipeDetecting && _swipe.magnitude >= DetectSwipeDistance)
+				else if (_isSwipeDetecting && _swipe.magnitude >= detectSwipeDistance)
 				{
 					if (Mathf.Abs(_swipe.x) > Mathf.Abs(_swipe.y))
 					{
-						// Horizontal swipe
 						if (_swipe.x > 0)
 						{
 							SwipedRight = true;
@@ -57,7 +54,6 @@ namespace Script
 					}
 					else
 					{
-						// Vertical swipe
 						if (_swipe.y > 0)
 						{
 							SwipedUp = true;
@@ -68,25 +64,26 @@ namespace Script
 						}
 					}
 
-					_wasFirstTap = false;
+					_wasAlreadyFirstTap = false;
 					_isSwipeDetecting = false;
 				}
 				else if (_isSwipeDetecting && t.phase == TouchPhase.Moved)
 				{
-					Vector2 endPos = new Vector2(t.position.x / (float)Screen.width, t.position.y / (float)Screen.width);
+					var endPos = new Vector2(t.position.x / Screen.width, t.position.y / Screen.width);
 					_swipe = new Vector2(endPos.x - _startPos.x, endPos.y - _startPos.y);
 				}
-				else if (t.phase == TouchPhase.Ended && _swipe.magnitude < DetectSwipeDistance)
+				else if (t.phase == TouchPhase.Ended && _swipe.magnitude < detectSwipeDistance)
 				{
-					if (_wasFirstTap)
+					_isSwipeDetecting = false;
+					if (_wasAlreadyFirstTap)
 					{
 						StopCoroutine(_nextTouchWaitCooldownCoroutine);
-						_wasFirstTap = false;
+						_wasAlreadyFirstTap = false;
 						DoubleTap = true;
 					}
 					else
 					{
-						_wasFirstTap = true;
+						_wasAlreadyFirstTap = true;
 						_nextTouchWaitCooldownCoroutine = NextTouchWaitCooldown();
 					}
 				}
@@ -103,8 +100,8 @@ namespace Script
 		}
 		private IEnumerator NextTouchWaitCooldown()
 		{
-			yield return new WaitForSeconds(NextTouchWaitSec);
-			_wasFirstTap = true;
+			yield return new WaitForSeconds(nextTouchWaitSec);
+			_wasAlreadyFirstTap = true;
 		}
 	}
 }
