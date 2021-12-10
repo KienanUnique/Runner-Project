@@ -1,12 +1,13 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace Script
+namespace Script.Player
 {
-    public class PlayerUtilities : MonoBehaviour
+    public class PlayerMovement : MonoBehaviour
     {
         [HideInInspector] public bool isAlive = true;
+        [SerializeField] private int playerDefaultSpeedY = 4;
+        [SerializeField] private float playerDefaultSmoothTimeX = 0.05f;
 
         private Tilemap _borderTilemap;
         private LevelUtilities _levelUtilities;
@@ -37,8 +38,8 @@ namespace Script
             if (isAlive)
             {
                 var curPosX = Vector2.SmoothDamp(transform.position, new Vector2(_moveToX, transform.position.y),
-                    ref _velocity, GameConst.PlayerSmoothTimeX).x;
-                var curPosY = transform.position.y + GameConst.PlayerSpeedY * Time.deltaTime;
+                    ref _velocity, playerDefaultSmoothTimeX).x;
+                var curPosY = transform.position.y + playerDefaultSpeedY * Time.deltaTime;
                 transform.position = new Vector3(curPosX, curPosY, 0);
             }
         }
@@ -46,13 +47,14 @@ namespace Script
         public void MoveOnSwipe(int direction)
         {
             var moveToCell = _mainGrid.WorldToCell(transform.position);
-            if (direction == GameConst.LeftDirNum)
+            switch (direction)
             {
-                moveToCell.x -= 1;
-            }
-            else if (direction == GameConst.RightDirNum)
-            {
-                moveToCell.x += 1;
+                case GameConst.LeftDirNum:
+                    moveToCell.x -= 1;
+                    break;
+                case GameConst.RightDirNum:
+                    moveToCell.x += 1;
+                    break;
             }
 
             if (!_borderTilemap.HasTile(moveToCell))

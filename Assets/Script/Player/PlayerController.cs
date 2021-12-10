@@ -1,17 +1,18 @@
-﻿using UnityEngine;
+﻿using Script.Player;
+using UnityEngine;
 
 namespace Script
 {
     public class PlayerController : MonoBehaviour
     {
 
-        private PlayerUtilities _playerClass;
+        private PlayerMovement _playerClass;
         private LevelUtilities _levelUtilities;
 
         private void Start()
         {
             Application.targetFrameRate = 60;
-            _playerClass = GetComponent<PlayerUtilities>();
+            _playerClass = GetComponent<PlayerMovement>();
             _levelUtilities = GetComponent<LevelUtilities>();
             _levelUtilities.StartLevel();
         }

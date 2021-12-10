@@ -5,6 +5,7 @@ using Script;
 public class RunAttack : MonoBehaviour
 {
     [SerializeField] private Transform target;
+    [SerializeField] private float enemySpeedY = 4;
     
     [HideInInspector]public float nextWaypointDistance = 1f;
 
@@ -56,7 +57,7 @@ public class RunAttack : MonoBehaviour
         
         Vector2 directon = ((Vector2)_path.vectorPath[_currentWaypoint] - (Vector2)transform.position).normalized;
         
-        transform.position += (Vector3)directon * GameConst.PlayerSpeedY * Time.deltaTime; 
+        transform.position += (Vector3)directon * enemySpeedY * Time.deltaTime; 
         
         float distance = Vector2.Distance(transform.position, _path.vectorPath[_currentWaypoint]);
         

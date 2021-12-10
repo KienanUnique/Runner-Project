@@ -1,10 +1,11 @@
 using System.Collections;
 using Script;
+using Script.Player;
 using UnityEngine;
 
 public class StaticAttack : MonoBehaviour
 {
-    private PlayerUtilities _player;
+    private PlayerMovement _player;
     private BoxCollider2D _playerBoxCollider2D;
     private Animator _animator;
     private BoxCollider2D _attackZone;
@@ -13,7 +14,7 @@ public class StaticAttack : MonoBehaviour
     
     void Start()
     {
-        _player = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<PlayerUtilities>();
+        _player = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<PlayerMovement>();
         _playerBoxCollider2D = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<BoxCollider2D>();
         _animator = GetComponent<Animator>();
         _attackZone = transform.GetChild(1).gameObject.GetComponent<BoxCollider2D>();

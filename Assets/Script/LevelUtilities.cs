@@ -1,3 +1,4 @@
+using Script.Player;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -12,11 +13,11 @@ namespace Script
         [SerializeField] private Tilemap changeLineTilemap;
 
 
-        private PlayerUtilities _player;
+        private PlayerMovement _player;
 
         void Start()
         {
-            _player = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<PlayerUtilities>();
+            _player = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<PlayerMovement>();
         }
 
         public void StartLevel()
