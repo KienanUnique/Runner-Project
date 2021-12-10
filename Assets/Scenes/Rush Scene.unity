@@ -32086,6 +32086,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9de0e71beab2a4f64a20a954e6270955, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  switchLineCooldownSec: 0.5
   twoSidedLineSwitchTile: {fileID: 11400000, guid: d2ec889cd88b6af5bb9e92b1ba1888c2, type: 2}
   leftLineSwitchTile: {fileID: 11400000, guid: ee64e3c1a960123b2baa83c40a400c9e, type: 2}
   rightLineSwitchTile: {fileID: 11400000, guid: ff046625e0cb0e73ca97fdbfeb1ed14f, type: 2}
@@ -33135,6 +33136,25 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7947911505737750448, guid: 8728cc48d2747494893fd60426c06f6e, type: 3}
   m_PrefabInstance: {fileID: 1470749734}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1549396919 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2675256127736329342, guid: 0ea31d71f207ea6ceba971f0909a4400, type: 3}
+  m_PrefabInstance: {fileID: 2675256128741514442}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1549396920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1549396919}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab653a162299f97aea0dc74fb479f407, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blackoutGameObjectsOnAiming:
+  - {fileID: 604911301}
 --- !u!1001 &1587658138
 PrefabInstance:
   m_ObjectHideFlags: 0

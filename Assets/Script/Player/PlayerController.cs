@@ -6,31 +6,33 @@ namespace Script
     public class PlayerController : MonoBehaviour
     {
 
-        private PlayerMovement _playerClass;
+        private PlayerMovement _playerMovement;
         private LevelUtilities _levelUtilities;
+        private PlayerAttack _playerAttack;
 
         private void Start()
         {
             Application.targetFrameRate = 60;
-            _playerClass = GetComponent<PlayerMovement>();
+            _playerMovement = GetComponent<PlayerMovement>();
+            _playerAttack = GetComponent<PlayerAttack>();
             _levelUtilities = GetComponent<LevelUtilities>();
             _levelUtilities.StartLevel();
         }
         
         private void Update()
         {
-            if (_playerClass.isAlive)
+            if (_playerMovement.isAlive)
             {
                 if (SwipeInput.SwipedLeft || SwipeInput.SwipedRight)
                 {
-                    _playerClass.MoveOnSwipe(SwipeInput.SwipedLeft ? GameConst.LeftDirNum : GameConst.RightDirNum);
+                    _playerMovement.MoveOnSwipe(SwipeInput.SwipedLeft ? GameConst.LeftDirNum : GameConst.RightDirNum);
                 }
                 else if (SwipeInput.DoubleTap)
                 {
-                    Debug.Log("DoubleTap");
+                    _playerAttack.SetBlackout(!_playerAttack.GetBlackoutState());
                 }
             }
-            else if (!_playerClass.isAlive && SwipeInput.SwipedLeft || SwipeInput.SwipedRight)
+            else if (!_playerMovement.isAlive && SwipeInput.SwipedLeft || SwipeInput.SwipedRight)
             {
                 _levelUtilities.StartLevel();
             }

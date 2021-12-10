@@ -42,5 +42,7 @@ Material:
     m_Floats:
     - _GradientTimeValue: 0.7
     - _IsShaded: 0
+    - _NeedBlackout: 0
+    - _NeedBlackoutNeedBlackout: 0
     m_Colors: []
   m_BuildTextureStacks: []
