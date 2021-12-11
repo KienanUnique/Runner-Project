@@ -49,10 +49,10 @@ namespace Script.Player
             var moveToCell = _mainGrid.WorldToCell(transform.position);
             switch (direction)
             {
-                case GameConst.LeftDirNum:
+                case MovingConst.SwipedLeft:
                     moveToCell.x -= 1;
                     break;
-                case GameConst.RightDirNum:
+                case MovingConst.SwipedRight:
                     moveToCell.x += 1;
                     break;
             }

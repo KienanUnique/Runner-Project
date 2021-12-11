@@ -1,22 +1,20 @@
 using System.Collections;
 using UnityEngine;
 
-namespace Script
+namespace Script.Input
 {
-	public class SwipeInput : MonoBehaviour
+	public class ScreenInputController : MonoBehaviour
 	{
 		[SerializeField] private float detectSwipeDistance = 0.05f;
 		[SerializeField] private float nextTouchWaitSec = 0.4f;
 		[SerializeField] private bool debugWithKeyboard = true;
 
-		public static bool SwipedRight;
-		public static bool SwipedLeft;
-		public static bool SwipedUp;
-		public static bool SwipedDown;
-		public static bool DoubleTap;
-
 		private Vector2 _swipe;
 		private Vector2 _startPos;
+
+		private readonly InputState _inputState = new InputState();
+		
+		//private Vector2 _petOnScreenPosition;
 
 		private bool _isSwipeDetecting;
 		private bool _wasAlreadyFirstTap;
@@ -24,11 +22,11 @@ namespace Script
 
 		public void Update()
 		{
-			SwitchInputFlagsToDefaultState();
-			
-			if (Input.touches.Length > 0)
+			_inputState.SetMoveInput(MovingConst.NoInput);
+
+			if (UnityEngine.Input.touches.Length > 0)
 			{
-				var t = Input.GetTouch(0);
+				var t = UnityEngine.Input.GetTouch(0);
 				if (t.phase == TouchPhase.Began && !_isSwipeDetecting)
 				{
 					_isSwipeDetecting = true;
@@ -57,14 +55,22 @@ namespace Script
 			}
 		}
 
-		private void SwitchInputFlagsToDefaultState()
+		public void SwitchIntoAimingInputMode()
 		{
-			SwipedRight = false;
-			SwipedLeft = false;
-			SwipedUp = false;
-			SwipedDown = false;
-			DoubleTap = false;
+			_inputState.SetInputMode(InputModeConst.Aiming);
 		}
+		
+		public void SwitchIntoMovingInputMode()
+		{
+			_inputState.SetInputMode(InputModeConst.Moving);
+		}
+
+		public InputState GetCurrentInputState()
+		{
+			return _inputState;
+		}
+
+		// TODO Vector2 getAimingDirection()
 
 		private void StartSwipe(Vector2 tapPos)
 		{
@@ -84,33 +90,33 @@ namespace Script
 			{
 				if (_swipe.x > 0)
 				{
-					SwipedRight = true;
+					_inputState.SetMoveInput(MovingConst.SwipedRight);
 				}
 				else
 				{
-					SwipedLeft = true;
+					_inputState.SetMoveInput(MovingConst.SwipedLeft);
 				}
 			}
 			else
 			{
 				if (_swipe.y > 0)
 				{
-					SwipedUp = true;
+					_inputState.SetMoveInput(MovingConst.SwipedUp);
 				}
 				else
 				{
-					SwipedDown = true;
+					_inputState.SetMoveInput(MovingConst.SwipedDown);
 				}
 			}
 		}
-		
+
 		private void OnTapDetected()
 		{
 			if (_wasAlreadyFirstTap)
 			{
 				StopCoroutine(_nextTouchWaitCooldownCoroutine);
 				_wasAlreadyFirstTap = false;
-				DoubleTap = true;
+				_inputState.SetMoveInput(MovingConst.DoubleTap);
 			}
 			else
 			{
@@ -118,7 +124,7 @@ namespace Script
 				_nextTouchWaitCooldownCoroutine = NextTouchWaitCooldown();
 			}
 		}
-		
+
 		private IEnumerator NextTouchWaitCooldown()
 		{
 			yield return new WaitForSeconds(nextTouchWaitSec);
@@ -127,11 +133,28 @@ namespace Script
 
 		private void ProcessKeyboardPressedButtons()
 		{
-			SwipedDown = SwipedDown || Input.GetKeyDown(KeyCode.DownArrow);
-			SwipedUp = SwipedUp || Input.GetKeyDown(KeyCode.UpArrow);
-			SwipedRight = SwipedRight || Input.GetKeyDown(KeyCode.RightArrow);
-			SwipedLeft = SwipedLeft || Input.GetKeyDown(KeyCode.LeftArrow);
-			DoubleTap = DoubleTap || Input.GetKeyDown(KeyCode.RightShift);
+			if (_inputState.GetMoveInput() != MovingConst.NoInput) return;
+			
+			if (UnityEngine.Input.GetKeyDown(KeyCode.DownArrow))
+			{
+				_inputState.SetMoveInput(MovingConst.SwipedDown);
+			}
+			else if (UnityEngine.Input.GetKeyDown(KeyCode.UpArrow))
+			{
+				_inputState.SetMoveInput(MovingConst.SwipedUp);
+			}
+			else if (UnityEngine.Input.GetKeyDown(KeyCode.RightArrow))
+			{
+				_inputState.SetMoveInput(MovingConst.SwipedRight);
+			}
+			else if (UnityEngine.Input.GetKeyDown(KeyCode.LeftArrow))
+			{
+				_inputState.SetMoveInput(MovingConst.SwipedLeft);
+			}
+			else if (UnityEngine.Input.GetKeyDown(KeyCode.RightShift))
+			{
+				_inputState.SetMoveInput(MovingConst.DoubleTap);
+			}
 		}
 	}
 }
