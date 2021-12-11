@@ -7,7 +7,7 @@ namespace Script
 	{
 		[SerializeField] private float detectSwipeDistance = 0.05f;
 		[SerializeField] private float nextTouchWaitSec = 0.4f;
-		[SerializeField] private bool debugWithArrowKeys = true;
+		[SerializeField] private bool debugWithKeyboard = true;
 
 		public static bool SwipedRight;
 		public static bool SwipedLeft;
@@ -24,84 +24,114 @@ namespace Script
 
 		public void Update()
 		{
-			SwipedRight = false;
-			SwipedLeft = false;
-			SwipedUp = false;
-			SwipedDown = false;
-			DoubleTap = false;
-
+			SwitchInputFlagsToDefaultState();
+			
 			if (Input.touches.Length > 0)
 			{
 				var t = Input.GetTouch(0);
 				if (t.phase == TouchPhase.Began && !_isSwipeDetecting)
 				{
-					_startPos = new Vector2(t.position.x / Screen.width, t.position.y / Screen.width);
 					_isSwipeDetecting = true;
-					_swipe = new Vector2(0, 0);
+					StartSwipe(t.position);
 				}
 				else if (_isSwipeDetecting && _swipe.magnitude >= detectSwipeDistance)
 				{
-					if (Mathf.Abs(_swipe.x) > Mathf.Abs(_swipe.y))
-					{
-						if (_swipe.x > 0)
-						{
-							SwipedRight = true;
-						}
-						else
-						{
-							SwipedLeft = true;
-						}
-					}
-					else
-					{
-						if (_swipe.y > 0)
-						{
-							SwipedUp = true;
-						}
-						else
-						{
-							SwipedDown = true;
-						}
-					}
-
 					_wasAlreadyFirstTap = false;
 					_isSwipeDetecting = false;
+					DetectSwipeDirection();
 				}
 				else if (_isSwipeDetecting && t.phase == TouchPhase.Moved)
 				{
-					var endPos = new Vector2(t.position.x / Screen.width, t.position.y / Screen.width);
-					_swipe = new Vector2(endPos.x - _startPos.x, endPos.y - _startPos.y);
+					UpdateSwipe(t.position);
 				}
 				else if (t.phase == TouchPhase.Ended && _swipe.magnitude < detectSwipeDistance)
 				{
 					_isSwipeDetecting = false;
-					if (_wasAlreadyFirstTap)
-					{
-						StopCoroutine(_nextTouchWaitCooldownCoroutine);
-						_wasAlreadyFirstTap = false;
-						DoubleTap = true;
-					}
-					else
-					{
-						_wasAlreadyFirstTap = true;
-						_nextTouchWaitCooldownCoroutine = NextTouchWaitCooldown();
-					}
+					OnTapDetected();
 				}
 			}
 
-			if (debugWithArrowKeys)
+			if (debugWithKeyboard)
 			{
-				SwipedDown = SwipedDown || Input.GetKeyDown(KeyCode.DownArrow);
-				SwipedUp = SwipedUp || Input.GetKeyDown(KeyCode.UpArrow);
-				SwipedRight = SwipedRight || Input.GetKeyDown(KeyCode.RightArrow);
-				SwipedLeft = SwipedLeft || Input.GetKeyDown(KeyCode.LeftArrow);
-				DoubleTap = DoubleTap || Input.GetKeyDown(KeyCode.RightShift);
+				ProcessKeyboardPressedButtons();
 			}
 		}
+
+		private void SwitchInputFlagsToDefaultState()
+		{
+			SwipedRight = false;
+			SwipedLeft = false;
+			SwipedUp = false;
+			SwipedDown = false;
+			DoubleTap = false;
+		}
+
+		private void StartSwipe(Vector2 tapPos)
+		{
+			_startPos = new Vector2(tapPos.x / Screen.width, tapPos.y / Screen.width);
+			_swipe = new Vector2(0, 0);
+		}
+
+		private void UpdateSwipe(Vector2 tapPos)
+		{
+			var curEndPos = new Vector2(tapPos.x / Screen.width, tapPos.y / Screen.width);
+			_swipe = new Vector2(curEndPos.x - _startPos.x, curEndPos.y - _startPos.y);
+		}
+
+		private void DetectSwipeDirection()
+		{
+			if (Mathf.Abs(_swipe.x) > Mathf.Abs(_swipe.y))
+			{
+				if (_swipe.x > 0)
+				{
+					SwipedRight = true;
+				}
+				else
+				{
+					SwipedLeft = true;
+				}
+			}
+			else
+			{
+				if (_swipe.y > 0)
+				{
+					SwipedUp = true;
+				}
+				else
+				{
+					SwipedDown = true;
+				}
+			}
+		}
+		
+		private void OnTapDetected()
+		{
+			if (_wasAlreadyFirstTap)
+			{
+				StopCoroutine(_nextTouchWaitCooldownCoroutine);
+				_wasAlreadyFirstTap = false;
+				DoubleTap = true;
+			}
+			else
+			{
+				_wasAlreadyFirstTap = true;
+				_nextTouchWaitCooldownCoroutine = NextTouchWaitCooldown();
+			}
+		}
+		
 		private IEnumerator NextTouchWaitCooldown()
 		{
 			yield return new WaitForSeconds(nextTouchWaitSec);
 			_wasAlreadyFirstTap = true;
+		}
+
+		private void ProcessKeyboardPressedButtons()
+		{
+			SwipedDown = SwipedDown || Input.GetKeyDown(KeyCode.DownArrow);
+			SwipedUp = SwipedUp || Input.GetKeyDown(KeyCode.UpArrow);
+			SwipedRight = SwipedRight || Input.GetKeyDown(KeyCode.RightArrow);
+			SwipedLeft = SwipedLeft || Input.GetKeyDown(KeyCode.LeftArrow);
+			DoubleTap = DoubleTap || Input.GetKeyDown(KeyCode.RightShift);
 		}
 	}
 }
