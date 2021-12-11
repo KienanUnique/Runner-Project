@@ -29,7 +29,14 @@ namespace Script
                 }
                 else if (SwipeInput.DoubleTap)
                 {
-                    _playerAttack.SetBlackout(!_playerAttack.GetBlackoutState());
+                    if (_playerAttack.IsInAimingMode())
+                    {
+                        _playerAttack.ExitAimingMode();
+                    }
+                    else
+                    {
+                        _playerAttack.EnterAimingMode();
+                    }
                 }
             }
             else if (!_playerMovement.isAlive && SwipeInput.SwipedLeft || SwipeInput.SwipedRight)
