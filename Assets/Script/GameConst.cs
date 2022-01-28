@@ -5,26 +5,21 @@ namespace Script
         public const string PlayerGameObjName = "Player";
     }
 
-    public static class InputModeConst
+    public static class InputMode
     {
         public const int Moving = 0;
         public const int Aiming = 1;
     }
 
-    public static class AimingConst
+    public static class InputEvent
     {
-        public const int WaitAiming = 0;
-        public const int Aiming = 1;
-        public const int FinishedAiming = 2;
-    }
-
-    public static class MovingConst
-    {
-        public const int NoInput = 0;
-        public const int SwipedRight = 1;
-        public const int SwipedLeft = 2;
-        public const int SwipedUp = 3;
-        public const int SwipedDown = 4;
+        public const int NoEvent = 0;
+        public const int SwipeRight = 1;
+        public const int SwipeLeft = 2;
+        public const int SwipeUp = 3;
+        public const int SwipeDown = 4;
         public const int DoubleTap = 5;
+        public const int Aiming = 6;
+        public const int FinishedAiming = 7;
     }
 }

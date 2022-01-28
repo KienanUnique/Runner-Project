@@ -1,28 +1,37 @@
+using System;
 using System.Collections;
+using Script.Player;
 using UnityEngine;
 
 namespace Script.Input
 {
 	public class ScreenInputController : MonoBehaviour
 	{
-		[SerializeField] private float detectSwipeDistance = 0.05f;
-		[SerializeField] private float nextTouchWaitSec = 0.4f;
-		[SerializeField] private bool debugWithKeyboard = true;
-
 		private Vector2 _swipe;
 		private Vector2 _startPos;
 
-		private readonly InputState _inputState = new InputState();
-		
+		private int _inputMode;
+		private int _inputEvent;
+		private Vector2 _aimingGuideVector;
+
 		//private Vector2 _petOnScreenPosition;
 
 		private bool _isSwipeDetecting;
 		private bool _wasAlreadyFirstTap;
 		private IEnumerator _nextTouchWaitCooldownCoroutine;
 
-		public void Update()
+		private PlayerEditor _playerEditor;
+
+		private void Start()
 		{
-			_inputState.SetMoveInput(MovingConst.NoInput);
+			_playerEditor = GetComponent<PlayerEditor>();
+			_inputMode = InputMode.Moving;
+			_inputEvent = InputEvent.NoEvent;
+		}
+
+		private void Update()
+		{
+			_inputEvent = InputEvent.NoEvent;
 
 			if (UnityEngine.Input.touches.Length > 0)
 			{
@@ -32,7 +41,7 @@ namespace Script.Input
 					_isSwipeDetecting = true;
 					StartSwipe(t.position);
 				}
-				else if (_isSwipeDetecting && _swipe.magnitude >= detectSwipeDistance)
+				else if (_isSwipeDetecting && _swipe.magnitude >= _playerEditor.GetDetectSwipeDistance())
 				{
 					_wasAlreadyFirstTap = false;
 					_isSwipeDetecting = false;
@@ -42,35 +51,18 @@ namespace Script.Input
 				{
 					UpdateSwipe(t.position);
 				}
-				else if (t.phase == TouchPhase.Ended && _swipe.magnitude < detectSwipeDistance)
+				else if (t.phase == TouchPhase.Ended && _swipe.magnitude < _playerEditor.GetDetectSwipeDistance())
 				{
 					_isSwipeDetecting = false;
 					OnTapDetected();
 				}
 			}
 
-			if (debugWithKeyboard)
+			if (_playerEditor.IsDebugWithKeyboard())
 			{
 				ProcessKeyboardPressedButtons();
 			}
 		}
-
-		public void SwitchIntoAimingInputMode()
-		{
-			_inputState.SetInputMode(InputModeConst.Aiming);
-		}
-		
-		public void SwitchIntoMovingInputMode()
-		{
-			_inputState.SetInputMode(InputModeConst.Moving);
-		}
-
-		public InputState GetCurrentInputState()
-		{
-			return _inputState;
-		}
-
-		// TODO Vector2 getAimingDirection()
 
 		private void StartSwipe(Vector2 tapPos)
 		{
@@ -88,73 +80,110 @@ namespace Script.Input
 		{
 			if (Mathf.Abs(_swipe.x) > Mathf.Abs(_swipe.y))
 			{
-				if (_swipe.x > 0)
-				{
-					_inputState.SetMoveInput(MovingConst.SwipedRight);
-				}
-				else
-				{
-					_inputState.SetMoveInput(MovingConst.SwipedLeft);
-				}
+				_inputEvent = _swipe.x > 0 ? InputEvent.SwipeRight : InputEvent.SwipeLeft;
 			}
 			else
 			{
-				if (_swipe.y > 0)
-				{
-					_inputState.SetMoveInput(MovingConst.SwipedUp);
-				}
-				else
-				{
-					_inputState.SetMoveInput(MovingConst.SwipedDown);
-				}
+				_inputEvent = _swipe.y > 0 ? InputEvent.SwipeUp : InputEvent.SwipeDown;
 			}
 		}
 
 		private void OnTapDetected()
 		{
-			if (_wasAlreadyFirstTap)
-			{
-				StopCoroutine(_nextTouchWaitCooldownCoroutine);
-				_wasAlreadyFirstTap = false;
-				_inputState.SetMoveInput(MovingConst.DoubleTap);
-			}
-			else
+			if (!_wasAlreadyFirstTap)
 			{
 				_wasAlreadyFirstTap = true;
 				_nextTouchWaitCooldownCoroutine = NextTouchWaitCooldown();
+				StartCoroutine(_nextTouchWaitCooldownCoroutine);
+			}
+			else
+			{
+				StopCoroutine(_nextTouchWaitCooldownCoroutine);
+				_wasAlreadyFirstTap = false;
+				_inputEvent = InputEvent.DoubleTap;
 			}
 		}
 
 		private IEnumerator NextTouchWaitCooldown()
 		{
-			yield return new WaitForSeconds(nextTouchWaitSec);
-			_wasAlreadyFirstTap = true;
+			yield return new WaitForSeconds(_playerEditor.GetNextTouchWaitSec());
+			_wasAlreadyFirstTap = false;
 		}
 
 		private void ProcessKeyboardPressedButtons()
 		{
-			if (_inputState.GetMoveInput() != MovingConst.NoInput) return;
-			
 			if (UnityEngine.Input.GetKeyDown(KeyCode.DownArrow))
 			{
-				_inputState.SetMoveInput(MovingConst.SwipedDown);
+				_inputEvent = InputEvent.SwipeDown;
 			}
 			else if (UnityEngine.Input.GetKeyDown(KeyCode.UpArrow))
 			{
-				_inputState.SetMoveInput(MovingConst.SwipedUp);
+				_inputEvent = InputEvent.SwipeUp;
 			}
 			else if (UnityEngine.Input.GetKeyDown(KeyCode.RightArrow))
 			{
-				_inputState.SetMoveInput(MovingConst.SwipedRight);
+				_inputEvent = InputEvent.SwipeRight;
 			}
 			else if (UnityEngine.Input.GetKeyDown(KeyCode.LeftArrow))
 			{
-				_inputState.SetMoveInput(MovingConst.SwipedLeft);
+				_inputEvent = InputEvent.SwipeLeft;
 			}
 			else if (UnityEngine.Input.GetKeyDown(KeyCode.RightShift))
 			{
-				_inputState.SetMoveInput(MovingConst.DoubleTap);
+				_inputEvent = InputEvent.DoubleTap;
 			}
 		}
+
+		public void EnterAimingMode()
+		{
+			_inputMode = InputMode.Aiming;
+		}
+
+		public void EnterMovingMode()
+		{
+			_inputMode = InputMode.Moving;
+		}
+
+		public bool IsInMovingMode()
+		{
+			return _inputMode == InputMode.Moving;
+		}
+
+		public bool IsInAimingMode()
+		{
+			return _inputMode == InputMode.Aiming;
+		}
+
+		public bool IsAimingMode()
+		{
+			return _inputMode == InputMode.Aiming;
+		}
+
+		public bool IsDoubleTap()
+		{
+			return _inputEvent == InputEvent.DoubleTap;
+		}
+
+		public bool IsHorizontalSwipe()
+		{
+			return _inputEvent == InputEvent.SwipeLeft || _inputEvent == InputEvent.SwipeRight;
+		}
+
+		public int GetHorizontalSwipeDirection()
+		{
+			return IsHorizontalSwipe() ? _inputEvent : InputEvent.NoEvent;
+		}
+
+		public bool IsLeftSwipe()
+		{
+			return _inputEvent == InputEvent.SwipeLeft;
+		}
+
+		public bool IsRightSwipe()
+		{
+			return _inputEvent == InputEvent.SwipeRight;
+		}
+
+		// TODO Vector2 getAimingDirection()
 	}
 }

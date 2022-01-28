@@ -5,16 +5,16 @@ using UnityEngine;
 
 public class StaticAttack : MonoBehaviour
 {
-    private PlayerMovement _player;
+    private PlayerCharacter _playerCharacter;
     private BoxCollider2D _playerBoxCollider2D;
     private Animator _animator;
     private BoxCollider2D _attackZone;
 
     private readonly int _hashAttack = Animator.StringToHash("Attack");
-    
-    void Start()
+
+    private void Start()
     {
-        _player = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<PlayerMovement>();
+        _playerCharacter = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<PlayerCharacter>();
         _playerBoxCollider2D = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<BoxCollider2D>();
         _animator = GetComponent<Animator>();
         _attackZone = transform.GetChild(1).gameObject.GetComponent<BoxCollider2D>();
@@ -29,7 +29,7 @@ public class StaticAttack : MonoBehaviour
     {
         if(_attackZone.IsTouching(_playerBoxCollider2D))
         {
-            _player.Kill();
+            _playerCharacter.Kill();
         }
     }
 

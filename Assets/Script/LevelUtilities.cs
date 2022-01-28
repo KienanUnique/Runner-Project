@@ -1,3 +1,4 @@
+using Script.Camera;
 using Script.Player;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -6,44 +7,51 @@ namespace Script
 {
     public class LevelUtilities : MonoBehaviour
     {
-        [Header("Grid objects")]
-        [SerializeField] private Vector2Int playerStartPos = new Vector2Int(-1, -5);
-        [SerializeField] private Grid mainGrid;
+        [Header("Grid objects")] [SerializeField]
+        private Grid mainGrid;
+
         [SerializeField] private Tilemap borderTilemap;
         [SerializeField] private Tilemap changeLineTilemap;
+        [SerializeField] private float slowdownFactor = 0.3f;
 
+        private PlayerController _playerController;
 
-        private PlayerMovement _player;
-
-        void Start()
+        private void Start()
         {
-            _player = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<PlayerMovement>();
+            _playerController = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<PlayerController>();
         }
 
-        public void StartLevel()
+        public void SlowDownTime()
         {
-            _player.Respawn();
-            if (Camera.main is { }) Camera.main.gameObject.GetComponent<CameraFollow>().ReturnCenter();
+            Time.timeScale = slowdownFactor;
+            Time.fixedDeltaTime = Time.timeScale * .02f;
         }
 
-        public Tilemap GetLevelBorders()
+        public void NormalizeTime()
+        {
+            Time.timeScale = 1f;
+        }
+
+        public Grid GetMainGrid()
+        {
+            return mainGrid;
+        }
+
+        public Tilemap GetBorderTilemap()
         {
             return borderTilemap;
         }
-        
-        public Tilemap GetLevelLineSwitches()
+
+        public Tilemap GetChangeLineTilemap()
         {
             return changeLineTilemap;
         }
 
-        public Grid GetLevelGrid()
+        public void RestartLevel()
         {
-            return mainGrid;
-        }
-        
-        public Vector3Int GetPlayerGridStartPos()
-        {
-            return (Vector3Int)playerStartPos;
+            _playerController.Respawn();
+            if (UnityEngine.Camera.main is { })
+                UnityEngine.Camera.main.gameObject.GetComponent<CameraFollow>().ReturnCenter();
         }
     }
 }

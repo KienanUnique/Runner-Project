@@ -5,43 +5,34 @@ namespace Script.Player
 {
     public class PlayerMovement : MonoBehaviour
     {
-        [HideInInspector] public bool isAlive = true;
-        [SerializeField] private int playerDefaultSpeedY = 4;
-        [SerializeField] private float playerDefaultSmoothTimeX = 0.05f;
-
         private Tilemap _borderTilemap;
+        private PlayerEditor _playerEditor;
         private LevelUtilities _levelUtilities;
         private Grid _mainGrid;
 
         private float _moveToX;
         private float _previousMoveToX;
 
-        private Animator _animator;
-
-        private readonly int _hashIsMoving = Animator.StringToHash("IsMoving");
-        private readonly int _hashDir = Animator.StringToHash("Direction");
-
         private Vector2 _velocity = Vector2.zero;
+
+        private bool _isMoving;
 
         private void Start()
         {
+            _playerEditor = GetComponent<PlayerEditor>();
             _levelUtilities = GetComponent<LevelUtilities>();
-            _borderTilemap = _levelUtilities.GetLevelBorders();
-            _mainGrid = _levelUtilities.GetLevelGrid();
-            _animator = GetComponent<Animator>();
-            _animator.SetInteger(_hashDir, 1);
-            _animator.SetBool(_hashIsMoving, true);
+            _borderTilemap = _levelUtilities.GetBorderTilemap();
+            _mainGrid = _levelUtilities.GetMainGrid();
         }
 
         void Update()
         {
-            if (isAlive)
-            {
-                var curPosX = Vector2.SmoothDamp(transform.position, new Vector2(_moveToX, transform.position.y),
-                    ref _velocity, playerDefaultSmoothTimeX).x;
-                var curPosY = transform.position.y + playerDefaultSpeedY * Time.deltaTime;
-                transform.position = new Vector3(curPosX, curPosY, 0);
-            }
+            if (!_isMoving) return;
+
+            var curPosX = Vector2.SmoothDamp(transform.position, new Vector2(_moveToX, transform.position.y),
+                ref _velocity, _playerEditor.GetPlayerDefaultSmoothTimeX()).x;
+            var curPosY = transform.position.y + _playerEditor.GetPlayerDefaultSpeedY() * Time.deltaTime;
+            transform.position = new Vector3(curPosX, curPosY, 0);
         }
 
         public void MoveOnSwipe(int direction)
@@ -49,10 +40,10 @@ namespace Script.Player
             var moveToCell = _mainGrid.WorldToCell(transform.position);
             switch (direction)
             {
-                case MovingConst.SwipedLeft:
+                case InputEvent.SwipeLeft:
                     moveToCell.x -= 1;
                     break;
-                case MovingConst.SwipedRight:
+                case InputEvent.SwipeRight:
                     moveToCell.x += 1;
                     break;
             }
@@ -62,6 +53,21 @@ namespace Script.Player
                 _previousMoveToX = _moveToX;
                 _moveToX = _mainGrid.GetCellCenterWorld(new Vector3Int(moveToCell.x, 0, 0)).x;
             }
+        }
+
+        public void StartMoving()
+        {
+            _isMoving = true;
+        }
+
+        public void StopMoving()
+        {
+            _isMoving = false;
+        }
+
+        public bool IsMoving()
+        {
+            return _isMoving;
         }
 
         public void SetMoveToX(float moveToX)
@@ -75,21 +81,11 @@ namespace Script.Player
             return _previousMoveToX;
         }
 
-        public void Respawn()
+        public void RestorePosition()
         {
-            _animator.SetInteger(_hashDir, 1);
-            _animator.SetBool(_hashIsMoving, true);
-            transform.position = _mainGrid.GetCellCenterWorld(_levelUtilities.GetPlayerGridStartPos());
-            _moveToX = _mainGrid.GetCellCenterWorld(_levelUtilities.GetPlayerGridStartPos()).x;
+            transform.position = _mainGrid.GetCellCenterWorld(_playerEditor.GetPlayerStartPosition());
+            _moveToX = transform.position.x;
             _previousMoveToX = _moveToX;
-            isAlive = true;
-        }
-
-        public void Kill()
-        {
-            isAlive = false;
-            _animator.SetInteger(_hashDir, 0);
-            _animator.SetBool(_hashIsMoving, false);
         }
     }
 }

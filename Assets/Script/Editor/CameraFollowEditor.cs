@@ -1,3 +1,4 @@
+using Script.Camera;
 using UnityEditor;
 
 namespace Script.Editor

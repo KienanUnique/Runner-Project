@@ -5,18 +5,18 @@ namespace Script.Obstacles
 {
     public class KillTouch : MonoBehaviour
     {
-        private PlayerMovement _playerMovement;
+        private PlayerCharacter _playerCharacter;
 
         private void Start()
         {
-            _playerMovement = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<PlayerMovement>();
+            _playerCharacter = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<PlayerCharacter>();
         }
     
         void OnCollisionEnter2D(Collision2D collision)
         {
             if (collision.gameObject.CompareTag("Player"))
             {
-                _playerMovement.Kill();
+                _playerCharacter.Kill();
             }
         }
 

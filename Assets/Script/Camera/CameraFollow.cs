@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Script
+namespace Script.Camera
 {
     public class CameraFollow : MonoBehaviour
     {
@@ -25,7 +25,7 @@ namespace Script
         {
             _target = GameObject.Find(GameConst.PlayerGameObjName).transform;
             _levelUtilities = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<LevelUtilities>();
-            _mainGrid = _levelUtilities.GetLevelGrid();
+            _mainGrid = _levelUtilities.GetMainGrid();
             
             _offset = transform.position - _target.position;
             
