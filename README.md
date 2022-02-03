@@ -4,7 +4,7 @@
 
 Slow down          |  Map moving
 :-------------------------:|:-------------------------:
-<img src="https://drive.google.com/uc?export=view&id=1s0zbGoeuR1HewgyNiP95pjfpKjmdxIsL" alt="drawing" width="90" height = "200"/>  |  <img src="https://drive.google.com/uc?export=view&id=1ktZt1m8aLWgfmtttX_iJewJNLBHCCYuS" alt="drawing" width="90" height = "200"/>!
+![image](https://drive.google.com/uc?export=view&id=1s0zbGoeuR1HewgyNiP95pjfpKjmdxIsL)  |  ![image](https://drive.google.com/uc?export=view&id=1ktZt1m8aLWgfmtttX_iJewJNLBHCCYuS)
 
 ## Платформы релиза
 Android, IOS
