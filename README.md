@@ -10,8 +10,5 @@ Android, IOS
 ## Платформа разработки
 Unity
 
-## Целевая аудитория
-Молодые люди в возрасте от 12 до 20 лет
-
 ## Полезные ссылки
 - [Ссылка на Google диск проекта](https://drive.google.com/drive/folders/1aVjZ0qg1cXFydCxDnj46i7BbJKNqoQnk?usp=sharing)
