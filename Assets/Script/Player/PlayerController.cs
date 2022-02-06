@@ -1,4 +1,4 @@
-﻿using Script.Input;
+﻿using Script.InputSystem;
 using UnityEngine;
 
 namespace Script.Player
@@ -7,8 +7,9 @@ namespace Script.Player
     [RequireComponent(typeof(PlayerMovement))]
     [RequireComponent(typeof(LevelUtilities))]
     [RequireComponent(typeof(PlayerVisual))]
-    [RequireComponent(typeof(ScreenInputController))]
     [RequireComponent(typeof(PlayerCharacter))]
+    [RequireComponent(typeof(InputManager))]
+    [RequireComponent(typeof(InputController))]
     public class PlayerController : MonoBehaviour
     {
         private PlayerMovement _playerMovement;
@@ -17,12 +18,12 @@ namespace Script.Player
         private PlayerEditor _playerEditor;
         private PlayerVisual _playerVisual;
         private PlayerCharacter _playerCharacter;
-        private ScreenInputController _screenInputController;
 
         private UIController _uiController;
         private PetController _petController;
+        private InputController _inputController;
 
-        private bool _isAiming;
+        private bool _isAimingInputMode;
 
         private void Start()
         {
@@ -31,64 +32,75 @@ namespace Script.Player
             _playerEditor = GetComponent<PlayerEditor>();
             _playerMovement = GetComponent<PlayerMovement>();
             _levelUtilities = GetComponent<LevelUtilities>();
-            _screenInputController = GetComponent<ScreenInputController>();
             _playerVisual = GetComponent<PlayerVisual>();
-            _playerCharacter = GetComponent<PlayerCharacter>();
 
             _uiController = _playerEditor.GetUIController();
             _petController = _playerEditor.GetPetController();
 
             _levelUtilities.RestartLevel();
         }
-
-        private void Update()
+        
+        private void OnEnable()
         {
+            if (_inputController == null)
+            {
+                _inputController = GetComponent<InputController>();
+            }
+            if (_playerCharacter == null)
+            {
+                _playerCharacter = GetComponent<PlayerCharacter>();
+            }
+            _inputController.OnHorizontalSwipe += OnHorizontalSwipe;
+            _inputController.OnDoubleTap += OnDoubleTap;
+            _playerCharacter.OnPlayerKill += OnPlayerKill;
+        }
+    
+        private void OnDisable()
+        {
+            _inputController.OnHorizontalSwipe -= OnHorizontalSwipe;
+            _inputController.OnDoubleTap -= OnDoubleTap;
+            _playerCharacter.OnPlayerKill -= OnPlayerKill;
+        }
+
+        private void OnHorizontalSwipe(int direction)
+        {
+            if(_isAimingInputMode) return;
             if (_playerCharacter.IsAlive())
             {
-                if (_isAiming)
-                {
-                    if (_screenInputController.IsDoubleTap())
-                    {
-                        _isAiming = false;
-                        ExitAimingMode();
-                        _screenInputController.EnterMovingMode();
-                    }
-                }
-                else
-                {
-                    if (_screenInputController.IsHorizontalSwipe())
-                    {
-                        _playerMovement.MoveOnSwipe(_screenInputController.GetHorizontalSwipeDirection());
-                    }
-
-                    else if (_screenInputController.IsDoubleTap())
-                    {
-                        _isAiming = true;
-                        EnterAimingMode();
-                        _screenInputController.EnterAimingMode();
-                    }
-                }
+                _playerMovement.MoveOnSwipe(direction);
             }
             else
             {
-                if (_playerMovement.IsMoving())
-                {
-                    _playerVisual.StartIdleAnimation();
-                    _playerMovement.StopMoving();
-                }
-                
-                if (_isAiming)
-                {
-                    _isAiming = false;
-                    ExitAimingMode();
-                    _screenInputController.EnterMovingMode();
-                }
-
-                if (_screenInputController.IsHorizontalSwipe())
-                {
-                    _levelUtilities.RestartLevel();
-                }
+                RestartLevel();
             }
+        }
+
+        private void OnDoubleTap()
+        {
+            if (!_playerCharacter.IsAlive()) return;
+            if (_isAimingInputMode)
+            {
+                ExitAimingMode();
+            }
+            else
+            {
+                EnterAimingMode();
+            }
+        }
+
+        private void OnPlayerKill()
+        {
+            _playerVisual.StartIdleAnimation();
+            _playerMovement.StopMoving();
+            if (_isAimingInputMode)
+            {
+                ExitAimingMode();
+            }
+        }
+
+        private void RestartLevel()
+        {
+            _levelUtilities.RestartLevel();
         }
 
         public void Respawn()
@@ -101,6 +113,7 @@ namespace Script.Player
 
         private void EnterAimingMode()
         {
+            _isAimingInputMode = true;
             _uiController.StartBlackout();
             _petController.Spawn();
             _levelUtilities.SlowDownTime();
@@ -108,14 +121,10 @@ namespace Script.Player
 
         private void ExitAimingMode()
         {
+            _isAimingInputMode = false;
             _uiController.StopBlackout();
             _petController.Despawn();
             _levelUtilities.NormalizeTime();
-        }
-
-        private void Aim()
-        {
-            // TODO aim by two points: tap from SIC and pet pos from petController 
         }
     }
 }

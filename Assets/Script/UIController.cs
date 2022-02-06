@@ -11,36 +11,36 @@ namespace Script
         private static readonly int NeedBlackout = Shader.PropertyToID("_NeedBlackout");
 
         private LineRenderer _lineRenderer;
-        private readonly Vector3[] _aimingLinePoints = new Vector3[2];
+        private Vector2 _petOnScreenPosition;
 
         private void Start()
         {
             _lineRenderer = GetComponent<LineRenderer>();
+            _lineRenderer.positionCount = 0;
             foreach (var blackoutGameObject in blackoutGameObjectsOnAiming)
             {
                 AddBlackoutMaterialToList(blackoutGameObject);
             }
-
-            _lineRenderer.enabled = false;
+            
         }
 
-        public void StartDrawingAimiLineFromTouchToPet(Vector2 screenTouchPosition, Vector2 petOnScreenPosition)
+        public void StartDrawingAimiLines(Vector2 screenTouchPosition, Vector2 petOnScreenPosition)
         {
-            _aimingLinePoints[0] = petOnScreenPosition;
-            _aimingLinePoints[1] = screenTouchPosition;
-            _lineRenderer.SetPositions(_aimingLinePoints);
-            _lineRenderer.enabled = true;
+            _lineRenderer.positionCount = 2;
+            _lineRenderer.SetPosition(0,UnityEngine.Camera.main.ScreenToWorldPoint((Vector3)petOnScreenPosition));
+            _lineRenderer.SetPosition(1,UnityEngine.Camera.main.ScreenToWorldPoint((Vector3)screenTouchPosition));
+            _petOnScreenPosition = petOnScreenPosition;
         }
 
         public void UpdateAimingTouchPosition(Vector2 screenTouchPosition)
         {
-            _aimingLinePoints[1] = screenTouchPosition;
-            _lineRenderer.SetPositions(_aimingLinePoints);
+            _lineRenderer.SetPosition(0,UnityEngine.Camera.main.ScreenToWorldPoint((Vector3)_petOnScreenPosition));
+            _lineRenderer.SetPosition(1,UnityEngine.Camera.main.ScreenToWorldPoint((Vector3)screenTouchPosition));
         }
 
         public void StopDrawingAimingLine()
         {
-            _lineRenderer.enabled = false;
+            _lineRenderer.positionCount = 0;
         }
 
         public void StartBlackout()

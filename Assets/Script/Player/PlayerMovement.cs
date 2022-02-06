@@ -5,8 +5,11 @@ namespace Script.Player
 {
     public class PlayerMovement : MonoBehaviour
     {
+        [SerializeField] private Vector2Int playerStartPosition = new Vector2Int(-1, -5);
+        [SerializeField] private int playerDefaultSpeedY = 4;
+        [SerializeField] private float playerDefaultSmoothTimeX = 0.05f;
+        
         private Tilemap _borderTilemap;
-        private PlayerEditor _playerEditor;
         private LevelUtilities _levelUtilities;
         private Grid _mainGrid;
 
@@ -19,20 +22,21 @@ namespace Script.Player
 
         private void Start()
         {
-            _playerEditor = GetComponent<PlayerEditor>();
             _levelUtilities = GetComponent<LevelUtilities>();
             _borderTilemap = _levelUtilities.GetBorderTilemap();
             _mainGrid = _levelUtilities.GetMainGrid();
         }
 
-        void Update()
+        private void Update()
         {
-            if (!_isMoving) return;
+            if (!_isMoving) return; // TODO Ieminator (while true, return null)
 
-            var curPosX = Vector2.SmoothDamp(transform.position, new Vector2(_moveToX, transform.position.y),
-                ref _velocity, _playerEditor.GetPlayerDefaultSmoothTimeX()).x;
-            var curPosY = transform.position.y + _playerEditor.GetPlayerDefaultSpeedY() * Time.deltaTime;
-            transform.position = new Vector3(curPosX, curPosY, 0);
+            var position = transform.position;
+            var curPosX = Vector2.SmoothDamp(position, new Vector2(_moveToX, position.y),
+                ref _velocity, playerDefaultSmoothTimeX).x;
+            var curPosY = position.y + playerDefaultSpeedY * Time.deltaTime;
+            position = new Vector3(curPosX, curPosY, 0);
+            transform.position = position;
         }
 
         public void MoveOnSwipe(int direction)
@@ -40,10 +44,10 @@ namespace Script.Player
             var moveToCell = _mainGrid.WorldToCell(transform.position);
             switch (direction)
             {
-                case InputEvent.SwipeLeft:
+                case HorizontalSwipeDirection.SwipeLeft:
                     moveToCell.x -= 1;
                     break;
-                case InputEvent.SwipeRight:
+                case HorizontalSwipeDirection.SwipeRight:
                     moveToCell.x += 1;
                     break;
             }
@@ -65,11 +69,6 @@ namespace Script.Player
             _isMoving = false;
         }
 
-        public bool IsMoving()
-        {
-            return _isMoving;
-        }
-
         public void SetMoveToX(float moveToX)
         {
             _previousMoveToX = _moveToX;
@@ -83,7 +82,7 @@ namespace Script.Player
 
         public void RestorePosition()
         {
-            transform.position = _mainGrid.GetCellCenterWorld(_playerEditor.GetPlayerStartPosition());
+            transform.position = _mainGrid.GetCellCenterWorld((Vector3Int)playerStartPosition);
             _moveToX = transform.position.x;
             _previousMoveToX = _moveToX;
         }
