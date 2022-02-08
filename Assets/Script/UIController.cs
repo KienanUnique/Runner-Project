@@ -5,42 +5,43 @@ namespace Script
 {
     public class UIController : MonoBehaviour
     {
+        [SerializeField] private UnityEngine.Camera mainCamera;
         [SerializeField] private List<GameObject> blackoutGameObjectsOnAiming;
 
         private readonly List<Material> _materialsForBlackoutOnAiming = new List<Material>();
         private static readonly int NeedBlackout = Shader.PropertyToID("_NeedBlackout");
 
         private LineRenderer _lineRenderer;
-        private Vector2 _petOnScreenPosition;
 
         private void Start()
         {
             _lineRenderer = GetComponent<LineRenderer>();
-            _lineRenderer.positionCount = 0;
+            _lineRenderer.enabled = false;
             foreach (var blackoutGameObject in blackoutGameObjectsOnAiming)
             {
                 AddBlackoutMaterialToList(blackoutGameObject);
             }
-            
         }
 
-        public void StartDrawingAimiLines(Vector2 screenTouchPosition, Vector2 petOnScreenPosition)
+        public void StartDrawingAimiLines(Vector2[] screenPositions)
         {
-            _lineRenderer.positionCount = 2;
-            _lineRenderer.SetPosition(0,UnityEngine.Camera.main.ScreenToWorldPoint((Vector3)petOnScreenPosition));
-            _lineRenderer.SetPosition(1,UnityEngine.Camera.main.ScreenToWorldPoint((Vector3)screenTouchPosition));
-            _petOnScreenPosition = petOnScreenPosition;
+            _lineRenderer.enabled = true;
+            UpdateAimingTouchPosition(screenPositions);
         }
 
-        public void UpdateAimingTouchPosition(Vector2 screenTouchPosition)
+        public void UpdateAimingTouchPosition(Vector2[] screenPositions)
         {
-            _lineRenderer.SetPosition(0,UnityEngine.Camera.main.ScreenToWorldPoint((Vector3)_petOnScreenPosition));
-            _lineRenderer.SetPosition(1,UnityEngine.Camera.main.ScreenToWorldPoint((Vector3)screenTouchPosition));
+            for (var i = 0; i < screenPositions.Length; i++)
+            {
+                var newPos = mainCamera.ScreenToWorldPoint(screenPositions[i]);
+                newPos.z = 0;
+                _lineRenderer.SetPosition(i, newPos);
+            }
         }
 
-        public void StopDrawingAimingLine()
+        public void StopDrawingAimiLines()
         {
-            _lineRenderer.positionCount = 0;
+            _lineRenderer.enabled = false;
         }
 
         public void StartBlackout()

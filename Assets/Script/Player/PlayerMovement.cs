@@ -8,7 +8,7 @@ namespace Script.Player
         [SerializeField] private Vector2Int playerStartPosition = new Vector2Int(-1, -5);
         [SerializeField] private int playerDefaultSpeedY = 4;
         [SerializeField] private float playerDefaultSmoothTimeX = 0.05f;
-        
+
         private Tilemap _borderTilemap;
         private LevelUtilities _levelUtilities;
         private Grid _mainGrid;

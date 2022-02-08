@@ -17,6 +17,7 @@ namespace Script
                     gameObject.hideFlags = HideFlags.HideAndDontSave;
                     _instance = gameObject.AddComponent<T>();
                 }
+
                 return _instance;
             }
         }

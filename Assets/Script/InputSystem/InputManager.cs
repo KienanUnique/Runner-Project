@@ -11,8 +11,11 @@ namespace Script.InputSystem
         #region Events
 
         public delegate void StartTouch(Vector2 position, float time);
+
         public event StartTouch OnStartTouch;
+
         public delegate void EndTouch(Vector2 position, float time);
+
         public event EndTouch OnEndTouch;
 
         #endregion
@@ -40,9 +43,10 @@ namespace Script.InputSystem
 
         private void StartTouchPrimary(InputAction.CallbackContext context)
         {
-            OnStartTouch?.Invoke(_playerInputActions.Touch.PrimaryPosition.ReadValue<Vector2>(), (float)context.startTime);
+            OnStartTouch?.Invoke(_playerInputActions.Touch.PrimaryPosition.ReadValue<Vector2>(),
+                (float)context.startTime);
         }
-    
+
         private void EndTouchPrimary(InputAction.CallbackContext context)
         {
             OnEndTouch?.Invoke(_playerInputActions.Touch.PrimaryPosition.ReadValue<Vector2>(), (float)context.time);

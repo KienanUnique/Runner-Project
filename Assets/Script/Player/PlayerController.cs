@@ -1,4 +1,5 @@
-﻿using Script.InputSystem;
+﻿using System.Collections;
+using Script.InputSystem;
 using UnityEngine;
 
 namespace Script.Player
@@ -24,6 +25,9 @@ namespace Script.Player
         private InputController _inputController;
 
         private bool _isAimingInputMode;
+        private bool _isAimLineDrawing;
+
+        private IEnumerator _updateTouchPositionForUI;
 
         private void Start()
         {
@@ -37,34 +41,56 @@ namespace Script.Player
             _uiController = _playerEditor.GetUIController();
             _petController = _playerEditor.GetPetController();
 
+            _updateTouchPositionForUI = UpdateTouchPositionForUI();
+
             _levelUtilities.RestartLevel();
         }
-        
+
         private void OnEnable()
         {
             if (_inputController == null)
             {
                 _inputController = GetComponent<InputController>();
             }
+
             if (_playerCharacter == null)
             {
                 _playerCharacter = GetComponent<PlayerCharacter>();
             }
-            _inputController.OnHorizontalSwipe += OnHorizontalSwipe;
+
+            if (_isAimingInputMode)
+            {
+                _inputController.OnTouchStart += OnAimingTouchStart;
+                _inputController.OnTouchEnd += OnAimingTouchEnd;
+            }
+            else
+            {
+                _inputController.OnHorizontalSwipe += OnHorizontalSwipe;
+            }
+
             _inputController.OnDoubleTap += OnDoubleTap;
             _playerCharacter.OnPlayerKill += OnPlayerKill;
         }
-    
+
         private void OnDisable()
         {
-            _inputController.OnHorizontalSwipe -= OnHorizontalSwipe;
+            if (_isAimingInputMode)
+            {
+                _inputController.OnTouchStart -= OnAimingTouchStart;
+                _inputController.OnTouchEnd -= OnAimingTouchEnd;
+            }
+            else
+            {
+                _inputController.OnHorizontalSwipe -= OnHorizontalSwipe;
+            }
+
             _inputController.OnDoubleTap -= OnDoubleTap;
             _playerCharacter.OnPlayerKill -= OnPlayerKill;
         }
 
         private void OnHorizontalSwipe(int direction)
         {
-            if(_isAimingInputMode) return;
+            if (_isAimingInputMode) return;
             if (_playerCharacter.IsAlive())
             {
                 _playerMovement.MoveOnSwipe(direction);
@@ -114,6 +140,9 @@ namespace Script.Player
         private void EnterAimingMode()
         {
             _isAimingInputMode = true;
+            _inputController.OnHorizontalSwipe -= OnHorizontalSwipe;
+            _inputController.OnTouchStart += OnAimingTouchStart;
+            _inputController.OnTouchEnd += OnAimingTouchEnd;
             _uiController.StartBlackout();
             _petController.Spawn();
             _levelUtilities.SlowDownTime();
@@ -122,9 +151,59 @@ namespace Script.Player
         private void ExitAimingMode()
         {
             _isAimingInputMode = false;
+            if (_isAimLineDrawing)
+            {
+                StopDrawingAimingLine();
+            }
+
+            _inputController.OnTouchStart -= OnAimingTouchStart;
+            _inputController.OnTouchEnd -= OnAimingTouchEnd;
+            _inputController.OnHorizontalSwipe += OnHorizontalSwipe;
             _uiController.StopBlackout();
             _petController.Despawn();
             _levelUtilities.NormalizeTime();
+        }
+
+        private void OnAimingTouchStart()
+        {
+            StartDrawingAimingLine();
+        }
+
+        private void OnAimingTouchEnd()
+        {
+            ExitAimingMode();
+        }
+
+        private void StartDrawingAimingLine()
+        {
+            StartCoroutine(_updateTouchPositionForUI);
+            _uiController.StartDrawingAimiLines(CreateScreenAimingPositionList());
+            _isAimLineDrawing = true;
+        }
+
+        private void StopDrawingAimingLine()
+        {
+            StopCoroutine(_updateTouchPositionForUI);
+            _uiController.StopDrawingAimiLines();
+            _isAimLineDrawing = false;
+        }
+
+        private IEnumerator UpdateTouchPositionForUI()
+        {
+            while (true)
+            {
+                _uiController.UpdateAimingTouchPosition(CreateScreenAimingPositionList());
+                yield return null;
+            }
+        }
+
+        private Vector2[] CreateScreenAimingPositionList()
+        {
+            return new[]
+            {
+                _inputController.GetCurrentScreenTouchPosition(),
+                _petController.GetScreenPetPosition()
+            };
         }
     }
 }

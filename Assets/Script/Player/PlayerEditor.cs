@@ -4,8 +4,9 @@ namespace Script.Player
 {
     public class PlayerEditor : MonoBehaviour
     {
-        [Header("Game Object References")] 
-        [SerializeField] private GameObject uiController;
+        [Header("Game Object References")] [SerializeField]
+        private GameObject uiController;
+
         [SerializeField] private GameObject petGameObject;
 
         public UIController GetUIController()
