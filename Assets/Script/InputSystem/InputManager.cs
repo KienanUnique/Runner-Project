@@ -44,12 +44,12 @@ namespace Script.InputSystem
         private void StartTouchPrimary(InputAction.CallbackContext context)
         {
             OnStartTouch?.Invoke(_playerInputActions.Touch.PrimaryPosition.ReadValue<Vector2>(),
-                (float)context.startTime);
+                (float) context.startTime);
         }
 
         private void EndTouchPrimary(InputAction.CallbackContext context)
         {
-            OnEndTouch?.Invoke(_playerInputActions.Touch.PrimaryPosition.ReadValue<Vector2>(), (float)context.time);
+            OnEndTouch?.Invoke(_playerInputActions.Touch.PrimaryPosition.ReadValue<Vector2>(), (float) context.time);
         }
 
         public Vector2 PrimaryPosition()

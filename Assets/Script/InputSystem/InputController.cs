@@ -9,26 +9,13 @@ namespace Script.InputSystem
         [SerializeField] private float minimumSwipeDistance = .9f;
         [SerializeField] private float maximumSwipeTime = 1f;
         [SerializeField, Range(0f, 1f)] private float swipeDirectionThreshold = .9f;
-        [SerializeField] private float maximumDoubleTapTime = 1.5f;
-        [SerializeField] private float maximumHoldTapTime = .7f;
 
         #region Events
 
         public delegate void SwipeHorizontal(int direction);
 
         public event SwipeHorizontal OnHorizontalSwipe;
-
-        public delegate void DoubleTap();
-
-        public event DoubleTap OnDoubleTap;
-
-        public delegate void TouchStart();
-
-        public event TouchStart OnTouchStart;
-
-        public delegate void TouchEnd();
-
-        public event TouchEnd OnTouchEnd;
+        
 
         #endregion
 
@@ -38,8 +25,6 @@ namespace Script.InputSystem
         private float _startTime;
         private Vector2 _endPosition;
         private float _endTime;
-        private IEnumerator _nextTouchWaitCooldownCoroutine;
-        private bool _wasAlreadyFirstTap;
 
         private void Awake()
         {
@@ -60,14 +45,12 @@ namespace Script.InputSystem
 
         private void SwipeStart(Vector2 position, float time)
         {
-            OnTouchStart?.Invoke();
             _startPosition = position;
             _startTime = time;
         }
 
         private void SwipeEnd(Vector2 position, float time)
         {
-            OnTouchEnd?.Invoke();
             _endPosition = position;
             _endTime = time;
             ProcessTouch();
@@ -81,11 +64,6 @@ namespace Script.InputSystem
                 var direction = (_endPosition - _startPosition).normalized;
                 CalculateSwipeDirection(direction);
             }
-            else if (Vector3.Distance(_startPosition, _endPosition) < minimumSwipeDistance &&
-                     (_endTime - _startTime) <= maximumHoldTapTime)
-            {
-                OnTapDetected();
-            }
         }
 
         private void CalculateSwipeDirection(Vector2 direction)
@@ -98,28 +76,6 @@ namespace Script.InputSystem
             {
                 OnHorizontalSwipe?.Invoke(HorizontalSwipeDirection.SwipeRight);
             }
-        }
-
-        private void OnTapDetected()
-        {
-            if (!_wasAlreadyFirstTap)
-            {
-                _wasAlreadyFirstTap = true;
-                _nextTouchWaitCooldownCoroutine = NextTouchWaitCooldown();
-                StartCoroutine(_nextTouchWaitCooldownCoroutine);
-            }
-            else
-            {
-                StopCoroutine(_nextTouchWaitCooldownCoroutine);
-                _wasAlreadyFirstTap = false;
-                OnDoubleTap?.Invoke();
-            }
-        }
-
-        private IEnumerator NextTouchWaitCooldown()
-        {
-            yield return new WaitForSeconds(maximumDoubleTapTime);
-            _wasAlreadyFirstTap = false;
         }
 
         public Vector2 GetCurrentScreenTouchPosition()
