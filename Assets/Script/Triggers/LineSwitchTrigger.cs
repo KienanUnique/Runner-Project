@@ -1,4 +1,6 @@
 using System.Collections;
+using Script.Camera;
+using Script.Player;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -6,7 +8,7 @@ namespace Script.Triggers
 {
     public class LineSwitchTrigger : MonoBehaviour
     {
-        private PlayerUtilities _playerUtilities;
+        private PlayerMovement _playerMovement;
         private LevelUtilities _levelUtilities;
         private Grid _mainGrid;
         private Tilemap _transitionsTilemap;
@@ -14,23 +16,25 @@ namespace Script.Triggers
         private CameraFollow _cameraCf;
         private bool _isSwitchLineCooldown;
         private Vector3Int _positionToMove;
-        
+
+        [SerializeField] private float switchLineCooldownSec = 0.5f;
         [SerializeField] private Tile twoSidedLineSwitchTile;
         [SerializeField] private Tile leftLineSwitchTile;
         [SerializeField] private Tile rightLineSwitchTile;
-        
+
 
         private void Start()
         {
-            _playerUtilities = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<PlayerUtilities>();
+            _playerMovement = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<PlayerMovement>();
             _levelUtilities = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<LevelUtilities>();
             _transitionsTilemap = GetComponent<Tilemap>();
-            _bordersTilemap = _levelUtilities.GetLevelBorders();
-            _mainGrid = _levelUtilities.GetLevelGrid();
+            _bordersTilemap = _levelUtilities.GetBorderTilemap();
+            _mainGrid = _levelUtilities.GetMainGrid();
             _isSwitchLineCooldown = false;
-            if (Camera.main is { }) _cameraCf = Camera.main.gameObject.GetComponent<CameraFollow>();
+            if (UnityEngine.Camera.main is { })
+                _cameraCf = UnityEngine.Camera.main.gameObject.GetComponent<CameraFollow>();
         }
-        
+
         private IEnumerator SwitchLineWithCooldown()
         {
             if (_isSwitchLineCooldown)
@@ -38,20 +42,20 @@ namespace Script.Triggers
 
             _isSwitchLineCooldown = true;
 
-            yield return new WaitForSeconds(GameConst.SwitchLineCooldownSec);
+            yield return new WaitForSeconds(switchLineCooldownSec);
 
             _isSwitchLineCooldown = false;
         }
-        
+
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (!other.gameObject.CompareTag("Player")) return;
-            
-            if(!_isSwitchLineCooldown)
+
+            if (!_isSwitchLineCooldown)
             {
                 _positionToMove = _mainGrid.WorldToCell(other.gameObject.transform.position);
                 var deltaCheckX = new Vector3Int(1, 0, 0);
-                if (other.bounds.center.x > _playerUtilities.GetPreviousMoveToX() &&
+                if (other.bounds.center.x > _playerMovement.GetPreviousMoveToX() &&
                     (_transitionsTilemap.GetTile<Tile>(_positionToMove + deltaCheckX) == rightLineSwitchTile ||
                      _transitionsTilemap.GetTile<Tile>(_positionToMove + deltaCheckX) == twoSidedLineSwitchTile))
                 {
@@ -72,7 +76,7 @@ namespace Script.Triggers
                         _cameraCf.SetCameraXBetweenCellsCenters(_positionToMove.x, checkingPos.x);
                     }
                 }
-                else if (other.bounds.center.x <= _playerUtilities.GetPreviousMoveToX() &&
+                else if (other.bounds.center.x <= _playerMovement.GetPreviousMoveToX() &&
                          (_transitionsTilemap.GetTile<Tile>(_positionToMove - deltaCheckX) == leftLineSwitchTile ||
                           _transitionsTilemap.GetTile<Tile>(_positionToMove - deltaCheckX) == twoSidedLineSwitchTile))
                 {
@@ -92,7 +96,8 @@ namespace Script.Triggers
                     _cameraCf.SetCameraXBetweenCellsCenters(checkingPos.x, _positionToMove.x);
                 }
             }
-            _playerUtilities.SetMoveToX(_mainGrid.GetCellCenterWorld(_positionToMove).x);
+
+            _playerMovement.SetMoveToX(_mainGrid.GetCellCenterWorld(_positionToMove).x);
             StartCoroutine(SwitchLineWithCooldown());
         }
     }
