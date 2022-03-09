@@ -6,7 +6,7 @@ namespace Script.InputSystem
     [DefaultExecutionOrder(-1)]
     public class InputController : MonoBehaviour
     {
-        [SerializeField] private float minimumSwipeDistance =  0.03f;
+        [SerializeField] private float minimumStepDistance =  0.03f;
         [SerializeField, Range(0f, 1f)] private float swipeDirectionThreshold = .9f;
 
         #region Events
@@ -64,12 +64,17 @@ namespace Script.InputSystem
         private void CheckSwipeLength(Vector2 startPosition, Vector2 currentPosition)
         {
             var swipeVector = currentPosition - startPosition;
-            if (swipeVector.magnitude < minimumSwipeDistance)
+            if (swipeVector.magnitude < minimumStepDistance)
             {
                 return;
             }
             InvokeSwipeByDirection(swipeVector.normalized);
-            StopCoroutine(_updateTouchPositionForUI);
+            UpdateStartPosition(currentPosition);
+        }
+
+        private void UpdateStartPosition(Vector2 newStartPosition)
+        {
+            _startPosition = newStartPosition;
         }
 
         private void InvokeSwipeByDirection(Vector2 direction)

@@ -34620,6 +34620,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 357025822119816904, guid: 0ea31d71f207ea6ceba971f0909a4400, type: 3}
+      propertyPath: minimumStepDistance
+      value: 0.085
+      objectReference: {fileID: 0}
+    - target: {fileID: 357025822119816904, guid: 0ea31d71f207ea6ceba971f0909a4400, type: 3}
       propertyPath: minimumSwipeDistance
       value: 0.03
       objectReference: {fileID: 0}
