@@ -6,8 +6,7 @@ namespace Script.InputSystem
     [DefaultExecutionOrder(-1)]
     public class InputController : MonoBehaviour
     {
-        [SerializeField] private float minimumSwipeDistance = .9f;
-        [SerializeField] private float maximumSwipeTime = 1f;
+        [SerializeField] private float minimumSwipeDistance =  0.03f;
         [SerializeField, Range(0f, 1f)] private float swipeDirectionThreshold = .9f;
 
         #region Events
@@ -15,20 +14,26 @@ namespace Script.InputSystem
         public delegate void SwipeHorizontal(int direction);
 
         public event SwipeHorizontal OnHorizontalSwipe;
-        
+
+        public delegate void TouchStart();
+
+        public event TouchStart OnTouchStart;
+
+        public delegate void TouchEnd();
+
+        public event TouchEnd OnTouchEnd;
 
         #endregion
 
 
         private InputManager _inputManager;
         private Vector2 _startPosition;
-        private float _startTime;
-        private Vector2 _endPosition;
-        private float _endTime;
+        private IEnumerator _updateTouchPositionForUI;
 
         private void Awake()
         {
             _inputManager = InputManager.Instance;
+            _updateTouchPositionForUI = UpdateTouchPositionForUI();
         }
 
         private void OnEnable()
@@ -43,30 +48,31 @@ namespace Script.InputSystem
             _inputManager.OnEndTouch -= SwipeEnd;
         }
 
-        private void SwipeStart(Vector2 position, float time)
+        private void SwipeStart()
         {
-            _startPosition = position;
-            _startTime = time;
+            OnTouchStart?.Invoke();
+            _startPosition = GetNormalizedSwipePosition();
+            StartCoroutine(_updateTouchPositionForUI);
         }
 
-        private void SwipeEnd(Vector2 position, float time)
+        private void SwipeEnd()
         {
-            _endPosition = position;
-            _endTime = time;
-            ProcessTouch();
+            OnTouchEnd?.Invoke();
+            StopCoroutine(_updateTouchPositionForUI);
         }
 
-        private void ProcessTouch()
+        private void CheckSwipeLength(Vector2 startPosition, Vector2 currentPosition)
         {
-            if (Vector3.Distance(_startPosition, _endPosition) >= minimumSwipeDistance &&
-                (_endTime - _startTime) <= maximumSwipeTime)
+            var swipeVector = currentPosition - startPosition;
+            if (swipeVector.magnitude < minimumSwipeDistance)
             {
-                var direction = (_endPosition - _startPosition).normalized;
-                CalculateSwipeDirection(direction);
+                return;
             }
+            InvokeSwipeByDirection(swipeVector.normalized);
+            StopCoroutine(_updateTouchPositionForUI);
         }
 
-        private void CalculateSwipeDirection(Vector2 direction)
+        private void InvokeSwipeByDirection(Vector2 direction)
         {
             if (Vector2.Dot(Vector2.left, direction) >= swipeDirectionThreshold)
             {
@@ -77,10 +83,23 @@ namespace Script.InputSystem
                 OnHorizontalSwipe?.Invoke(HorizontalSwipeDirection.SwipeRight);
             }
         }
-
-        public Vector2 GetCurrentScreenTouchPosition()
+        
+        private IEnumerator UpdateTouchPositionForUI()
         {
-            return _inputManager.PrimaryPosition();
+            while (true)
+            {
+                CheckSwipeLength(_startPosition, GetNormalizedSwipePosition());
+                yield return null;
+            }
+            // ReSharper disable once IteratorNeverReturns
+        }
+
+        private Vector2 GetNormalizedSwipePosition()
+        {
+            var nonNormalVector = _inputManager.PrimaryPosition();
+            nonNormalVector.x /= Screen.width;
+            nonNormalVector.y /= Screen.height;
+            return nonNormalVector;
         }
     }
 }
