@@ -47,6 +47,11 @@ namespace Script
             return changeLineTilemap;
         }
 
+        public int GetLineNumByWorldCoordinate(Vector3 worldCoordinate)
+        {
+            return mainGrid.WorldToCell(worldCoordinate).x;
+        }
+
         public void RestartLevel()
         {
             _playerController.Respawn();

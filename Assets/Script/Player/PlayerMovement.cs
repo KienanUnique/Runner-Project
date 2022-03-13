@@ -39,23 +39,20 @@ namespace Script.Player
             transform.position = position;
         }
 
-        public void MoveOnSwipe(int direction)
+        public void MoveOnSwipe(int lineToSwitch)
         {
             var moveToCell = _mainGrid.WorldToCell(transform.position);
-            switch (direction)
+            if (moveToCell.x == lineToSwitch)
             {
-                case HorizontalSwipeDirection.SwipeLeft:
-                    moveToCell.x -= 1;
-                    break;
-                case HorizontalSwipeDirection.SwipeRight:
-                    moveToCell.x += 1;
-                    break;
+                return;
             }
+
+            moveToCell.x = lineToSwitch;
 
             if (!_borderTilemap.HasTile(moveToCell))
             {
                 _previousMoveToX = _moveToX;
-                _moveToX = _mainGrid.GetCellCenterWorld(new Vector3Int(moveToCell.x, 0, 0)).x;
+                _moveToX = _mainGrid.GetCellCenterWorld(new Vector3Int(lineToSwitch, 0, 0)).x;
             }
         }
 

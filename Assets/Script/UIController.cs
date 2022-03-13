@@ -29,6 +29,11 @@ namespace Script
             SetBlackoutState(false);
         }
 
+        public Vector3 ScreenTouchToWorldPoint(Vector2 touchOnScreenPosition)
+        {
+            return mainCamera.ScreenToWorldPoint(touchOnScreenPosition);
+        }
+
         private void SetBlackoutState(bool isBlackout)
         {
             float valToSet = isBlackout ? 1 : 0;

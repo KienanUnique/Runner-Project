@@ -1,4 +1,5 @@
-﻿using Script.InputSystem;
+﻿using System;
+using Script.InputSystem;
 using UnityEngine;
 
 namespace Script.Player
@@ -17,7 +18,7 @@ namespace Script.Player
         private LevelUtilities _levelUtilities;
         private PlayerVisual _playerVisual;
         private PlayerCharacter _playerCharacter;
-        
+
         private InputController _inputController;
 
         private void Start()
@@ -30,6 +31,12 @@ namespace Script.Player
             _playerVisual = GetComponent<PlayerVisual>();
 
             _levelUtilities.RestartLevel();
+        }
+
+        private void Update()
+        {
+            _playerMovement.MoveOnSwipe(_levelUtilities.GetLineNumByWorldCoordinate(
+                UnityEngine.Camera.main.ScreenToWorldPoint(_inputController.GetTouchPosition())));
         }
 
         private void OnEnable()
@@ -56,11 +63,7 @@ namespace Script.Player
 
         private void OnHorizontalSwipe(int direction)
         {
-            if (_playerCharacter.IsAlive())
-            {
-                _playerMovement.MoveOnSwipe(direction);
-            }
-            else
+            if (!_playerCharacter.IsAlive())
             {
                 RestartLevel();
             }
