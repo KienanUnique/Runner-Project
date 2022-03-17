@@ -11,8 +11,11 @@ namespace Script
         private Grid mainGrid;
 
         [SerializeField] private Tilemap borderTilemap;
-        [SerializeField] private Tilemap changeLineTilemap;
+        [SerializeField] private Tilemap transitionsTilemap;
         [SerializeField] private float slowdownFactor = 0.3f;
+        [SerializeField] private Tile twoSidedLineSwitchTile;
+        [SerializeField] private Tile leftLineSwitchTile;
+        [SerializeField] private Tile rightLineSwitchTile;
 
         private PlayerController _playerController;
 
@@ -37,14 +40,41 @@ namespace Script
             return mainGrid;
         }
 
-        public Tilemap GetBorderTilemap()
+        public bool IsCellRightOrTwoSidedLineSwitch(Vector3Int cellToCheck)
         {
-            return borderTilemap;
+            var tileToCheck = transitionsTilemap.GetTile<Tile>(cellToCheck);
+            return tileToCheck == rightLineSwitchTile || tileToCheck == twoSidedLineSwitchTile;
+        }
+        
+        public bool IsCellLeftOrTwoSidedLineSwitch(Vector3Int cellToCheck)
+        {
+            var tileToCheck = transitionsTilemap.GetTile<Tile>(cellToCheck);
+            return tileToCheck == leftLineSwitchTile || tileToCheck == twoSidedLineSwitchTile;
         }
 
-        public Tilemap GetChangeLineTilemap()
+        public bool IsCellTransition(Vector3Int positionToCheck)
         {
-            return changeLineTilemap;
+            return transitionsTilemap.HasTile(positionToCheck);
+        }
+
+        public bool IsCellBorder(Vector3Int cellToCheck)
+        {
+            return borderTilemap.HasTile(cellToCheck);
+        }
+
+        public Vector3Int ConvertWorldToCellPosition(Vector3 worldPosition)
+        {
+            return mainGrid.WorldToCell(worldPosition);
+        }
+        
+        public float GetLineCenterInWorld(int gridX)
+        {
+            return mainGrid.GetCellCenterWorld(new Vector3Int(gridX, 0, 0)).x;
+        }
+        
+        public Vector3 ConvertCellToWorldPosition(Vector3Int gridPosition)
+        {
+            return mainGrid.GetCellCenterWorld(gridPosition);
         }
 
         public void RestartLevel()

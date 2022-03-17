@@ -32313,9 +32313,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   switchLineCooldownSec: 0.5
-  twoSidedLineSwitchTile: {fileID: 11400000, guid: d2ec889cd88b6af5bb9e92b1ba1888c2, type: 2}
-  leftLineSwitchTile: {fileID: 11400000, guid: ee64e3c1a960123b2baa83c40a400c9e, type: 2}
-  rightLineSwitchTile: {fileID: 11400000, guid: ff046625e0cb0e73ca97fdbfeb1ed14f, type: 2}
 --- !u!50 &932754646
 Rigidbody2D:
   serializedVersion: 4
@@ -32566,36 +32563,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7947911505737750448, guid: 8728cc48d2747494893fd60426c06f6e, type: 3}
   m_PrefabInstance: {fileID: 1048540573}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1072189918
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1072189919}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1072189919
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1072189918}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.5, y: 13.9, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 8
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1084223041
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -34659,6 +34626,22 @@ PrefabInstance:
       propertyPath: switchLineTilemap
       value: 
       objectReference: {fileID: 932754644}
+    - target: {fileID: 2675256127736329343, guid: 0ea31d71f207ea6ceba971f0909a4400, type: 3}
+      propertyPath: leftLineSwitchTile
+      value: 
+      objectReference: {fileID: 11400000, guid: ee64e3c1a960123b2baa83c40a400c9e, type: 2}
+    - target: {fileID: 2675256127736329343, guid: 0ea31d71f207ea6ceba971f0909a4400, type: 3}
+      propertyPath: transitionsTilemap
+      value: 
+      objectReference: {fileID: 932754644}
+    - target: {fileID: 2675256127736329343, guid: 0ea31d71f207ea6ceba971f0909a4400, type: 3}
+      propertyPath: rightLineSwitchTile
+      value: 
+      objectReference: {fileID: 11400000, guid: ff046625e0cb0e73ca97fdbfeb1ed14f, type: 2}
+    - target: {fileID: 2675256127736329343, guid: 0ea31d71f207ea6ceba971f0909a4400, type: 3}
+      propertyPath: twoSidedLineSwitchTile
+      value: 
+      objectReference: {fileID: 11400000, guid: d2ec889cd88b6af5bb9e92b1ba1888c2, type: 2}
     - target: {fileID: 4855356265360086581, guid: 0ea31d71f207ea6ceba971f0909a4400, type: 3}
       propertyPath: petGameObject
       value: 
