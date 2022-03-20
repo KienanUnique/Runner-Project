@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 namespace Script.Player
 {
