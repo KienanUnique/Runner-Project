@@ -7,12 +7,24 @@ namespace Script
     {
         [SerializeField] private UnityEngine.Camera mainCamera;
         [SerializeField] private List<GameObject> blackoutGameObjectsOnAiming;
+        [SerializeField] private GameObject attackButton;
+        [SerializeField] private GameObject restartButton;
 
         private readonly List<Material> _materialsForBlackoutOnAiming = new List<Material>();
         private static readonly int NeedBlackout = Shader.PropertyToID("_NeedBlackout");
+        
+        #region Events
+        public delegate void RestartButtonPressed();
+        public event RestartButtonPressed OnRestartButtonPressed;
+        
+        public delegate void AttackButtonPressed();
+        public event AttackButtonPressed OnAttackButtonPressed;
+        #endregion
 
         private void Start()
         {
+            DisableRestartButton();
+            
             foreach (var blackoutGameObject in blackoutGameObjectsOnAiming)
             {
                 AddBlackoutMaterialToList(blackoutGameObject);
@@ -44,6 +56,44 @@ namespace Script
             {
                 _materialsForBlackoutOnAiming.Add(blackoutGameObject.GetComponent<Renderer>().material);
             }
+        }
+        
+        public void OnAttackButtonPress(){
+            OnAttackButtonPressed.Invoke();
+        }
+        
+        public void OnRestartButtonPress(){
+            StopBlackout();
+            DisableRestartButton();
+            EnableAttackButton();
+            OnRestartButtonPressed.Invoke();
+        }
+
+        public void ShowRestartScreen()
+        {
+            EnableRestartButton();
+            DisableAttackButton();
+            StartBlackout();
+        }
+
+        private void EnableAttackButton()
+        {
+            attackButton.SetActive(true);
+        }
+        
+        private void DisableAttackButton()
+        {
+            attackButton.SetActive(false);
+        }
+        
+        public void EnableRestartButton()
+        {
+            restartButton.SetActive(true);
+        }
+        
+        public void DisableRestartButton()
+        {
+            restartButton.SetActive(false);
         }
     }
 }

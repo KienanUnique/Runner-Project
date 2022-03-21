@@ -12,13 +12,12 @@ namespace Script.Player
     [RequireComponent(typeof(InputController))]
     public class PlayerController : MonoBehaviour
     {
+        [SerializeField] private UIController uiController;
+        private InputController _inputController;
         private PlayerMovement _playerMovement;
-
         private LevelUtilities _levelUtilities;
         private PlayerVisual _playerVisual;
         private PlayerCharacter _playerCharacter;
-        
-        private InputController _inputController;
 
         private void Start()
         {
@@ -46,12 +45,20 @@ namespace Script.Player
 
             _inputController.OnHorizontalSwipe += OnHorizontalSwipe;
             _playerCharacter.OnPlayerKill += OnPlayerKill;
+            uiController.OnRestartButtonPressed += OnRestartButtonPressed;
+            uiController.OnAttackButtonPressed += OnAttackButtonPressed;
+        }
+
+        private static void OnAttackButtonPressed()
+        {
+            Debug.Log("Attack");
         }
 
         private void OnDisable()
         {
             _inputController.OnHorizontalSwipe -= OnHorizontalSwipe;
             _playerCharacter.OnPlayerKill -= OnPlayerKill;
+            uiController.OnRestartButtonPressed -= OnRestartButtonPressed;
         }
 
         private void OnHorizontalSwipe(int direction)
@@ -60,19 +67,16 @@ namespace Script.Player
             {
                 _playerMovement.MoveOnSwipe(direction);
             }
-            else
-            {
-                RestartLevel();
-            }
         }
 
         private void OnPlayerKill()
         {
             _playerVisual.StartIdleAnimation();
             _playerMovement.StopMoving();
+            uiController.ShowRestartScreen();
         }
 
-        private void RestartLevel()
+        private void OnRestartButtonPressed()
         {
             _levelUtilities.RestartLevel();
         }
