@@ -7,7 +7,7 @@ namespace Script.Player
     [RequireComponent(typeof(PlayerMovement))]
     [RequireComponent(typeof(LevelUtilities))]
     [RequireComponent(typeof(PlayerVisual))]
-    [RequireComponent(typeof(PlayerCharacter))]
+    [RequireComponent(typeof(Character))]
     [RequireComponent(typeof(InputManager))]
     [RequireComponent(typeof(InputController))]
     public class PlayerController : MonoBehaviour
@@ -17,7 +17,7 @@ namespace Script.Player
         private PlayerMovement _playerMovement;
         private LevelUtilities _levelUtilities;
         private PlayerVisual _playerVisual;
-        private PlayerCharacter _playerCharacter;
+        private Character _playerCharacter;
 
         private void Start()
         {
@@ -40,11 +40,11 @@ namespace Script.Player
 
             if (_playerCharacter == null)
             {
-                _playerCharacter = GetComponent<PlayerCharacter>();
+                _playerCharacter = GetComponent<Character>();
             }
 
             _inputController.OnHorizontalSwipe += OnHorizontalSwipe;
-            _playerCharacter.OnPlayerKill += OnPlayerKill;
+            _playerCharacter.OnDying += OnDie;
             uiController.OnRestartButtonPressed += OnRestartButtonPressed;
             uiController.OnAttackButtonPressed += OnAttackButtonPressed;
         }
@@ -57,7 +57,7 @@ namespace Script.Player
         private void OnDisable()
         {
             _inputController.OnHorizontalSwipe -= OnHorizontalSwipe;
-            _playerCharacter.OnPlayerKill -= OnPlayerKill;
+            _playerCharacter.OnDying -= OnDie;
             uiController.OnRestartButtonPressed -= OnRestartButtonPressed;
         }
 
@@ -69,7 +69,7 @@ namespace Script.Player
             }
         }
 
-        private void OnPlayerKill()
+        private void OnDie()
         {
             _playerVisual.StartIdleAnimation();
             _playerMovement.StopMoving();

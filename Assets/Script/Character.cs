@@ -1,14 +1,14 @@
 using UnityEngine;
 
-namespace Script.Player
+namespace Script
 {
     [DefaultExecutionOrder(-1)]
-    public class PlayerCharacter : MonoBehaviour
+    public class Character : MonoBehaviour
     {
         #region Events
 
-        public delegate void PlayerKill();
-        public event PlayerKill OnPlayerKill;
+        public delegate void Die();
+        public event Die OnDying;
 
         #endregion
         private bool _isAlive = true;
@@ -21,7 +21,7 @@ namespace Script.Player
         public void Kill()
         {
             _isAlive = false;
-            OnPlayerKill?.Invoke();
+            OnDying?.Invoke();
         }
 
         public void RestoreStates()

@@ -1,16 +1,19 @@
 using UnityEngine;
 
-public class TriggerStaticAttack : MonoBehaviour
+namespace Script.Obstacles.Static_Attack
 {
-    private StaticAttack _enemyController;
-    private void Start()
+    public class TriggerStaticAttack : MonoBehaviour
     {
-        _enemyController = GetComponentInParent<StaticAttack>();
-    }
+        private StaticAttack _enemyController;
+        private void Start()
+        {
+            _enemyController = GetComponentInParent<StaticAttack>();
+        }
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if(other.gameObject.CompareTag("Player"))
-            _enemyController.OnPlayerEnteredTrigger();
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if(other.gameObject.CompareTag("Player"))
+                _enemyController.OnPlayerEnteredTrigger();
+        }
     }
 }

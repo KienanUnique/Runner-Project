@@ -1,15 +1,14 @@
-using Script.Player;
 using UnityEngine;
 
 namespace Script.Obstacles
 {
     public class KillTouch : MonoBehaviour
     {
-        private PlayerCharacter _playerCharacter;
+        private Character _playerCharacter;
 
         private void Start()
         {
-            _playerCharacter = GameObject.FindGameObjectWithTag(GameConst.PlayerTag).GetComponent<PlayerCharacter>();
+            _playerCharacter = GameObject.FindGameObjectWithTag(GameConst.PlayerTag).GetComponent<Character>();
         }
     
         void OnCollisionEnter2D(Collision2D collision)
