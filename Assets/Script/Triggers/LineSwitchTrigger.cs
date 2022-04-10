@@ -18,8 +18,8 @@ namespace Script.Triggers
 
         private void Start()
         {
-            _playerMovement = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<PlayerMovement>();
-            _levelUtilities = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<LevelUtilities>();
+            _playerMovement = GameObject.FindGameObjectWithTag(GameConst.PlayerTag).GetComponent<PlayerMovement>();
+            _levelUtilities = GameObject.FindGameObjectWithTag(GameConst.PlayerTag).GetComponent<LevelUtilities>();
             _isSwitchLineCooldown = false;
             if (UnityEngine.Camera.main is { })
                 _cameraCf = UnityEngine.Camera.main.gameObject.GetComponent<CameraFollow>();

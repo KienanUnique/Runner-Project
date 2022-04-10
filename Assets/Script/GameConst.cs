@@ -2,7 +2,8 @@ namespace Script
 {
     public static class GameConst
     {
-        public const string PlayerGameObjName = "Player";
+        public const string PlayerTag = "Player";
+        public const string PetTag = "Pet";
     }
 
     public static class HorizontalSwipeDirection

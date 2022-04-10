@@ -23,8 +23,8 @@ namespace Script.Camera
 
         private void Start()
         {
-            _target = GameObject.Find(GameConst.PlayerGameObjName).transform;
-            _levelUtilities = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<LevelUtilities>();
+            _target = GameObject.FindGameObjectWithTag(GameConst.PlayerTag).transform;
+            _levelUtilities = GameObject.FindGameObjectWithTag(GameConst.PlayerTag).GetComponent<LevelUtilities>();
             _mainGrid = _levelUtilities.GetMainGrid();
             
             _offset = transform.position - _target.position;

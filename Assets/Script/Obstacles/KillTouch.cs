@@ -9,7 +9,7 @@ namespace Script.Obstacles
 
         private void Start()
         {
-            _playerCharacter = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<PlayerCharacter>();
+            _playerCharacter = GameObject.FindGameObjectWithTag(GameConst.PlayerTag).GetComponent<PlayerCharacter>();
         }
     
         void OnCollisionEnter2D(Collision2D collision)

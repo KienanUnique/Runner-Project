@@ -14,8 +14,8 @@ public class StaticAttack : MonoBehaviour
 
     private void Start()
     {
-        _playerCharacter = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<PlayerCharacter>();
-        _playerBoxCollider2D = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<BoxCollider2D>();
+        _playerCharacter = GameObject.FindGameObjectWithTag(GameConst.PlayerTag).GetComponent<PlayerCharacter>();
+        _playerBoxCollider2D = GameObject.FindGameObjectWithTag(GameConst.PlayerTag).GetComponent<BoxCollider2D>();
         _animator = GetComponent<Animator>();
         _attackZone = transform.GetChild(1).gameObject.GetComponent<BoxCollider2D>();
     }

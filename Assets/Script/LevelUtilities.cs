@@ -18,10 +18,12 @@ namespace Script
         [SerializeField] private Tile rightLineSwitchTile;
 
         private PlayerController _playerController;
+        private PetController _petController;
 
         private void Start()
         {
-            _playerController = GameObject.Find(GameConst.PlayerGameObjName).GetComponent<PlayerController>();
+            _playerController = GameObject.FindGameObjectWithTag(GameConst.PlayerTag).GetComponent<PlayerController>();
+            _petController = GameObject.FindGameObjectWithTag(GameConst.PetTag).GetComponent<PetController>();
         }
 
         public void SlowDownTime()
@@ -80,6 +82,7 @@ namespace Script
         public void RestartLevel()
         {
             _playerController.Respawn();
+            _petController.Respawn();
             if (UnityEngine.Camera.main is { })
                 UnityEngine.Camera.main.gameObject.GetComponent<CameraFollow>().ReturnCenter();
         }

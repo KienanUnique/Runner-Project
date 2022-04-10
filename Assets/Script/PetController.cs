@@ -1,41 +1,25 @@
+using Pathfinding;
 using UnityEngine;
 
-public class PetController : MonoBehaviour
+namespace Script
 {
-    [SerializeField] private float PetScreenProportionY = 0.4f;
-    private bool _isSpawned;
-    void Start()
+    public class PetController : MonoBehaviour
     {
-        transform.gameObject.SetActive(false);
-    }
+        [SerializeField] private Vector2Int petStartPosition = new Vector2Int(-1, -6);
 
-    void Update()
-    {
-        if(_isSpawned){
-            UpdatePetPosition();
+        private LevelUtilities _levelUtilities;
+
+        private void Start()
+        {
+            _levelUtilities = GameObject.FindGameObjectWithTag(GameConst.PlayerTag).GetComponent<LevelUtilities>();
         }
+
+        public void Respawn()
+        {
+            transform.position = _levelUtilities.ConvertCellToWorldPosition((Vector3Int)petStartPosition);
+        }
+
+        // TODO: public void AttackToDirection(Vector2 attackDirection)
+
     }
-
-    public void Spawn(){
-        _isSpawned = true;
-        UpdatePetPosition();
-        transform.gameObject.SetActive(true);
-    }
-
-    public void Despawn(){
-        _isSpawned = false;
-        transform.gameObject.SetActive(false);
-    }
-
-    public Vector2 GetScreenPetPosition(){
-        return new Vector2(Screen.width / 2, Screen.height  * PetScreenProportionY);
-    }
-
-    private void UpdatePetPosition(){
-        Vector2 petPosition = Camera.main.ScreenToWorldPoint(GetScreenPetPosition());
-        transform.position = petPosition;
-    }
-
-    // TODO: public void AttackToDirection(Vector2 attackDirection)
-
 }
